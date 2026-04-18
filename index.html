@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5-Year Multibagger Screener</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0c0f;
+  --surface: #111318;
+  --surface2: #181b22;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.14);
+  --green: #00d68f;
+  --green-dim: rgba(0,214,143,0.12);
+  --green-dim2: rgba(0,214,143,0.06);
+  --amber: #f5a623;
+  --amber-dim: rgba(245,166,35,0.1);
+  --blue: #4d9ef7;
+  --blue-dim: rgba(77,158,247,0.1);
+  --red: #ff5c5c;
+  --red-dim: rgba(255,92,92,0.1);
+  --purple: #9b8afb;
+  --purple-dim: rgba(155,138,251,0.1);
+  --text: #e8eaf0;
+  --text2: #8b90a0;
+  --text3: #555a6a;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --radius: 6px;
+  --radius-lg: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.header-left {}
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--green);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+h1 {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+.subtitle {
+  font-size: 13px;
+  color: var(--text2);
+  margin-top: 6px;
+  max-width: 480px;
+  line-height: 1.6;
+}
+.score-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  background: var(--green-dim2);
+  flex-shrink: 0;
+}
+.score-num {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--green);
+  line-height: 1;
+}
+.score-lbl {
+  font-size: 10px;
+  color: var(--green);
+  opacity: 0.7;
+  margin-top: 2px;
+  letter-spacing: 0.05em;
+}
+
+/* ── layout ── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 820px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* ── section ── */
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.sec-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.sec-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sec-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.sec-hint {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text3);
+}
+.sec-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; }
+
+/* ── filter row ── */
+.filter-row {
+  display: grid;
+  grid-template-columns: 180px 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+.filter-label {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.4;
+}
+.filter-hint {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 3px;
+  background: var(--border2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--green);
+  cursor: pointer;
+  box-shadow: 0 0 0 3px var(--green-dim);
+  transition: box-shadow 0.15s;
+}
+input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px var(--green-dim); }
+.slider-val {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--green);
+  min-width: 52px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* toggle */
+.toggle-wrap { display: flex; align-items: center; gap: 8px; }
+.toggle {
+  position: relative;
+  width: 38px; height: 20px;
+  cursor: pointer;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  position: absolute; inset: 0;
+  background: var(--border2);
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+.toggle input:checked ~ .toggle-track { background: var(--green); }
+.toggle-thumb {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 14px; height: 14px;
+  background: var(--text2);
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+.toggle input:checked ~ .toggle-thumb { transform: translateX(18px); background: #fff; }
+.toggle-label { font-size: 12px; color: var(--text2); }
+
+/* ── themes ── */
+.themes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 14px 16px;
+}
+.theme-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+.theme-chip:hover { border-color: var(--border2); }
+.theme-chip.active { border-color: var(--green); background: var(--green-dim2); }
+.theme-icon { font-size: 16px; line-height: 1; }
+.theme-name { font-size: 12px; font-weight: 500; color: var(--text2); }
+.theme-chip.active .theme-name { color: var(--green); }
+
+/* ── mcap row ── */
+.mcap-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  grid-column: 1/-1;
+}
+.mcap-pill {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.15s;
+  user-select: none;
+}
+.mcap-pill.active { border-color: var(--amber); background: var(--amber-dim); color: var(--amber); }
+
+/* ── RIGHT PANEL ── */
+.panel { position: sticky; top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+
+.signal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.signal-head {
+  padding: 11px 16px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+.signal-body { padding: 14px 16px; }
+
+.signal-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.signal-row:last-child { border-bottom: none; }
+.sig-icon {
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.sig-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.sig-key { font-family: var(--mono); font-size: 11px; color: var(--text); }
+
+/* query box */
+.query-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.query-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.query-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+.copy-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--green);
+  background: transparent;
+  color: var(--green);
+  cursor: pointer;
+  transition: background 0.15s;
+  letter-spacing: 0.05em;
+}
+.copy-btn:hover { background: var(--green-dim); }
+.copy-btn.copied { border-color: var(--blue); color: var(--blue); }
+
+.query-code {
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--text2);
+  padding: 14px 16px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.query-code .kw { color: var(--green); }
+.query-code .op { color: var(--amber); }
+.query-code .num { color: var(--blue); }
+
+.open-btn {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 0 16px 14px;
+  padding: 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+  text-align: center;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.open-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+
+/* ── disclaimer ── */
+.disclaimer {
+  margin-top: 1rem;
+  padding: 10px 14px;
+  background: var(--amber-dim);
+  border: 1px solid rgba(245,166,35,0.2);
+  border-radius: var(--radius);
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="eyebrow">// screener builder v1</div>
+    <h1>5-Year Multibagger Filter</h1>
+    <p class="subtitle">Adjust thresholds below. The query auto-generates for Screener.in. Based on patterns from 2021→2026 multibaggers.</p>
+  </div>
+  <div class="score-badge">
+    <div class="score-num" id="filterCount">0</div>
+    <div class="score-lbl">filters on</div>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- LEFT -->
+  <div class="left-col">
+
+    <!-- SECTOR THEMES -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-dot" style="background:#9b8afb"></div>
+        <div class="sec-title" style="color:#9b8afb">Sector Themes (2025–30)</div>
+        <div class="sec-hint">select all that apply</div>
+      </div>
+      <div class="themes-grid">
+        <div class="theme-chip active" data-theme="Defence" onclick="toggleTheme(this)">
+          <span class="theme-icon">🛡</span><span class="theme-name">Defence</span>
+        </div>
+        <div class="theme-chip active" data-theme="Renewables" onclick="toggleTheme(this)">
+          <span class="theme-icon">⚡</span><span class="theme-name">Renewables</span>
+        </div>
+        <div class="theme-chip active" data-theme="Railways" onclick="toggleTheme(this)">
+          <span class="theme-icon">🚄</span><span class="theme-name">Railways</span>
+        </div>
+        <div class="theme-chip active" data-theme="Data Centres" onclick="toggleTheme(this)">
+          <span class="theme-icon">🖥</span><span class="theme-name">Data Centres</span>
+        </div>
+        <div class="theme-chip" data-theme="Semiconductors" onclick="toggleTheme(this)">
+          <span class="theme-icon">💡</span><span class="theme-name">Semiconductors</span>
+        </div>
+        <div class="theme-chip" data-theme="Nuclear Energy" onclick="toggleTheme(this)">
+          <span class="theme-icon">☢</span><span class="theme-name">Nuclear Energy</span>
+        </div>
+        <div class="theme-chip" data-theme="Shipbuilding" onclick="toggleTheme(this)">
+          <span class="theme-icon">🚢</span><span class="theme-name">Shipbuilding</span>
+        </div>
+        <div class="theme-chip" data-theme="EMS / PLI" onclick="toggleTheme(this)">
+          <span class="theme-icon">🏭</span><span class="theme-name">EMS / PLI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GROWTH FILTERS -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-dot" style="background:#00d68f"></div>
+        <div class="sec-title" style="color:#00d68f">Growth Filters</div>
+        <div class="sec-hint">revenue & profit momentum</div>
+      </div>
+      <div class="sec-body">
+
+        <div class="filter-row">
+          <div>
+            <div class="filter-label">Sales Growth (3yr CAGR)</div>
+            <div class="filter-hint">Minimum compound sales growth</div>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" min="5" max="50" value="15" step="1" id="s3yr" oninput="update()">
+            <div class="slider-val" id="s3yr-val">&gt; 15%</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked id="s3yr-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+
+        <div class="filter-row">
+          <div>
+            <div class="filter-label">Sales Growth (5yr CAGR)</div>
+            <div class="filter-hint">Long-term revenue durability</div>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" min="5" max="40" value="12" step="1" id="s5yr" oninput="update()">
+            <div class="slider-val" id="s5yr-val">&gt; 12%</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked id="s5yr-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+
+        <div class="filter-row">
+          <div>
+            <div class="filter-label">Profit Growth (3yr)</div>
+            <div class="filter-hint">PAT CAGR over 3 years</div>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" min="5" max="60" value="15" step="1" id="pat3" oninput="update()">
+            <div class="slider-val" id="pat3-val">&gt; 15%</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked id="pat3-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+
+        <div class="filter-row">
+          <div>
+            <div class="filter-label">Sales growth (TTM)</div>
+            <div class="filter-hint">Recent annual momentum</div>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" min="0" max="50" value="10" step="1" id="sttm" oninput="update()">
+            <div class="slider-val" id="sttm-val">&gt; 10%</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="sttm-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- QUALITY FILTERS -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-dot" style="background:#4d9ef7"></div>
+        <div class="sec-title" style="color:#4d9ef7">Quality Filters</div>
+        <div class="sec-hint">cash flow & balance sheet</div>
+      </div>
+      <div class="sec-body">
+
+        <div class="filter-row">
+          <div>
+            <div class="filter-label">Return on Equity</div>
+            <div class="filter-hint">Min ROE — capital efficiency</div>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" min="5" max="40" value="15" step="1" id="roe" oninput="update()">
+            <div class="slider-val" id="roe-val">&gt; 15%</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked id="roe-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+
+        <div class="filter-row">
+          <div>
+            <div class="filter-label">Debt to Equity</div>
+            <div class="filter-hint">Max D/E — avoid over-leverage</div>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" min="0" max="3" value="1" step="0.1" id="de" oninput="update()">
+            <div class="slider-val" id="de-val">&lt; 1.0x</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked id="de-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+
+        <div class="filter-row">
+          <div>
+            <div class="filter-label">Cash from Operations</div>
+            <div class="filter-hint">Positive CFO (real business)</div>
+          </div>
+          <div class="slider-wrap" style="justify-content: flex-start; padding-left: 4px;">
+            <span style="font-size:12px; color:var(--text2)">CFO must be positive</span>
+          </div>
+          <label class="toggle"><input type="checkbox" checked id="cfo-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+
+        <div class="filter-row">
+          <div>
+            <div class="filter-label">Interest Coverage</div>
+            <div class="filter-hint">Min times interest earned</div>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" min="1" max="15" value="3" step="0.5" id="ic" oninput="update()">
+            <div class="slider-val" id="ic-val">&gt; 3.0x</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="ic-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- VALUATION & SIZE -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-dot" style="background:#f5a623"></div>
+        <div class="sec-title" style="color:#f5a623">Valuation & Size</div>
+        <div class="sec-hint">don't overpay, find re-rating room</div>
+      </div>
+      <div class="sec-body">
+
+        <div class="filter-row">
+          <div>
+            <div class="filter-label">P/E Ratio</div>
+            <div class="filter-hint">Max price-to-earnings</div>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" min="10" max="120" value="60" step="5" id="pe" oninput="update()">
+            <div class="slider-val" id="pe-val">&lt; 60x</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked id="pe-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+
+        <div class="filter-row">
+          <div>
+            <div class="filter-label">PEG Ratio</div>
+            <div class="filter-hint">P/E relative to growth rate</div>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" min="0.2" max="3" value="1.5" step="0.1" id="peg" oninput="update()">
+            <div class="slider-val" id="peg-val">&lt; 1.5x</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="peg-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+
+        <div style="grid-column: 1/-1;">
+          <div class="filter-label" style="margin-bottom:8px">Market Cap Range (₹ Cr)</div>
+          <div class="mcap-pills">
+            <div class="mcap-pill" id="mc-micro" onclick="toggleMcap('micro')">Micro &lt;500</div>
+            <div class="mcap-pill active" id="mc-small" onclick="toggleMcap('small')">Small 500–5K</div>
+            <div class="mcap-pill active" id="mc-mid" onclick="toggleMcap('mid')">Mid 5K–50K</div>
+            <div class="mcap-pill" id="mc-large" onclick="toggleMcap('large')">Large &gt;50K</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /left -->
+
+  <!-- RIGHT PANEL -->
+  <div class="panel">
+
+    <!-- Signal checklist -->
+    <div class="signal-box">
+      <div class="signal-head">why this filter works</div>
+      <div class="signal-body">
+        <div class="signal-row">
+          <div class="sig-icon" style="background:var(--purple-dim); color:var(--purple)">01</div>
+          <div class="sig-text"><span class="sig-key">Sector theme</span><br>Govt capex-backed sectors re-rate even average companies. Biggest alpha driver 2021–26.</div>
+        </div>
+        <div class="signal-row">
+          <div class="sig-icon" style="background:var(--green-dim); color:var(--green)">02</div>
+          <div class="sig-text"><span class="sig-key">3yr + 5yr sales CAGR</span><br>Consistent growth across cycles proves the moat is real, not just one good year.</div>
+        </div>
+        <div class="signal-row">
+          <div class="sig-icon" style="background:var(--blue-dim); color:var(--blue)">03</div>
+          <div class="sig-text"><span class="sig-key">Positive CFO</span><br>The single best filter against accounting fraud and promotional stocks. Cash doesn't lie.</div>
+        </div>
+        <div class="signal-row">
+          <div class="sig-icon" style="background:var(--amber-dim); color:var(--amber)">04</div>
+          <div class="sig-text"><span class="sig-key">Small/mid cap</span><br>Re-rating from ₹2K Cr → ₹20K Cr is 10x. Large caps need fundamentals to do same work.</div>
+        </div>
+        <div class="signal-row">
+          <div class="sig-icon" style="background:var(--red-dim); color:var(--red)">05</div>
+          <div class="sig-text"><span class="sig-key">ROE &gt; 15%</span><br>High ROE with low debt = compounding machine. Management knows how to allocate capital.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query box -->
+    <div class="query-box">
+      <div class="query-head">
+        <div class="query-title">Screener.in query</div>
+        <button class="copy-btn" id="copyBtn" onclick="copyQuery()">copy</button>
+      </div>
+      <div class="query-code" id="queryCode"></div>
+      <a class="open-btn" id="openLink" href="#" target="_blank" onclick="openScreener(event)">↗ open in screener.in</a>
+    </div>
+
+    <div class="disclaimer">
+      ⚠ This is a quantitative pre-filter, not a buy recommendation. Always verify order book, management quality, and competitive moat before investing. Past sector patterns don't guarantee future returns.
+    </div>
+
+  </div>
+
+</div><!-- /layout -->
+
+<script>
+const state = {
+  themes: new Set(['Defence','Renewables','Railways','Data Centres']),
+  mcap: new Set(['small','mid'])
+};
+
+function toggleTheme(el) {
+  const t = el.dataset.theme;
+  if (state.themes.has(t)) { state.themes.delete(t); el.classList.remove('active'); }
+  else { state.themes.add(t); el.classList.add('active'); }
+  update();
+}
+
+function toggleMcap(key) {
+  const el = document.getElementById('mc-'+key);
+  if (state.mcap.has(key)) { state.mcap.delete(key); el.classList.remove('active'); }
+  else { state.mcap.add(key); el.classList.add('active'); }
+  update();
+}
+
+function val(id) { return parseFloat(document.getElementById(id).value); }
+function enabled(id) { return document.getElementById(id+'-en').checked; }
+
+function update() {
+  // update display values
+  document.getElementById('s3yr-val').textContent = '> '+val('s3yr')+'%';
+  document.getElementById('s5yr-val').textContent = '> '+val('s5yr')+'%';
+  document.getElementById('pat3-val').textContent = '> '+val('pat3')+'%';
+  document.getElementById('sttm-val').textContent = '> '+val('sttm')+'%';
+  document.getElementById('roe-val').textContent = '> '+val('roe')+'%';
+  document.getElementById('de-val').textContent = '< '+val('de').toFixed(1)+'x';
+  document.getElementById('ic-val').textContent = '> '+val('ic').toFixed(1)+'x';
+  document.getElementById('pe-val').textContent = '< '+val('pe')+'x';
+  document.getElementById('peg-val').textContent = '< '+val('peg').toFixed(1)+'x';
+
+  buildQuery();
+}
+
+function buildQuery() {
+  const lines = [];
+
+  // mcap
+  const mcapRanges = [];
+  if (state.mcap.has('micro')) mcapRanges.push('Market Capitalization < 500');
+  if (state.mcap.has('small')) mcapRanges.push('(Market Capitalization > 500 AND Market Capitalization < 5000)');
+  if (state.mcap.has('mid'))   mcapRanges.push('(Market Capitalization > 5000 AND Market Capitalization < 50000)');
+  if (state.mcap.has('large')) mcapRanges.push('Market Capitalization > 50000');
+  if (mcapRanges.length) lines.push('('+mcapRanges.join('\n  OR ')+')');
+
+  if (enabled('s3yr'))  lines.push('Sales growth 3Years > '+val('s3yr'));
+  if (enabled('s5yr'))  lines.push('Sales growth 5Years > '+val('s5yr'));
+  if (enabled('pat3'))  lines.push('Profit growth 3Years > '+val('pat3'));
+  if (enabled('sttm'))  lines.push('Sales growth > '+val('sttm'));
+  if (enabled('roe'))   lines.push('Return on equity > '+val('roe'));
+  if (enabled('de'))    lines.push('Debt to equity < '+val('de').toFixed(1));
+  if (enabled('cfo'))   lines.push('Cash from operating activity > 0');
+  if (enabled('ic'))    lines.push('Interest Coverage Ratio > '+val('ic').toFixed(1));
+  if (enabled('pe'))    lines.push('Price to Earning < '+val('pe'));
+  if (enabled('peg'))   lines.push('PEG Ratio < '+val('peg').toFixed(1));
+
+  const count = lines.length;
+  document.getElementById('filterCount').textContent = count;
+
+  const raw = lines.join('\nAND\n');
+
+  // render highlighted
+  let html = raw
+    .replace(/\b(AND|OR)\b/g, '<span class="op">$1</span>')
+    .replace(/\b(\d+(\.\d+)?)\b/g, '<span class="num">$1</span>')
+    .replace(/(Sales growth|Profit growth|Return on equity|Debt to equity|Cash from operating activity|Interest Coverage Ratio|Price to Earning|PEG Ratio|Market Capitalization)/g, '<span class="kw">$1</span>');
+
+  document.getElementById('queryCode').innerHTML = html || '<span style="color:var(--text3)">// enable at least one filter above</span>';
+}
+
+function copyQuery() {
+  const lines = [];
+  const mcapRanges = [];
+  if (state.mcap.has('micro')) mcapRanges.push('Market Capitalization < 500');
+  if (state.mcap.has('small')) mcapRanges.push('(Market Capitalization > 500 AND Market Capitalization < 5000)');
+  if (state.mcap.has('mid'))   mcapRanges.push('(Market Capitalization > 5000 AND Market Capitalization < 50000)');
+  if (state.mcap.has('large')) mcapRanges.push('Market Capitalization > 50000');
+  if (mcapRanges.length) lines.push('('+mcapRanges.join(' OR ')+')');
+
+  if (enabled('s3yr'))  lines.push('Sales growth 3Years > '+val('s3yr'));
+  if (enabled('s5yr'))  lines.push('Sales growth 5Years > '+val('s5yr'));
+  if (enabled('pat3'))  lines.push('Profit growth 3Years > '+val('pat3'));
+  if (enabled('sttm'))  lines.push('Sales growth > '+val('sttm'));
+  if (enabled('roe'))   lines.push('Return on equity > '+val('roe'));
+  if (enabled('de'))    lines.push('Debt to equity < '+val('de').toFixed(1));
+  if (enabled('cfo'))   lines.push('Cash from operating activity > 0');
+  if (enabled('ic'))    lines.push('Interest Coverage Ratio > '+val('ic').toFixed(1));
+  if (enabled('pe'))    lines.push('Price to Earning < '+val('pe'));
+  if (enabled('peg'))   lines.push('PEG Ratio < '+val('peg').toFixed(1));
+
+  const raw = lines.join(' AND ');
+  navigator.clipboard.writeText(raw).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function openScreener(e) {
+  e.preventDefault();
+  window.open('https://www.screener.in/screen/raw/', '_blank');
+}
+
+update();
+</script>
+</body>
+</html>
