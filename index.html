@@ -1,779 +1,656 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>5-Year Multibagger Screener</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>India ETF Explorer</title>
+<meta name="description" content="Explore ETFs listed on NSE India. Filter by category, view performance, and get AI-powered plain-English explanations of each ETF."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0a0c0f;
-  --surface: #111318;
-  --surface2: #181b22;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.14);
-  --green: #00d68f;
-  --green-dim: rgba(0,214,143,0.12);
-  --green-dim2: rgba(0,214,143,0.06);
-  --amber: #f5a623;
-  --amber-dim: rgba(245,166,35,0.1);
-  --blue: #4d9ef7;
-  --blue-dim: rgba(77,158,247,0.1);
-  --red: #ff5c5c;
-  --red-dim: rgba(255,92,92,0.1);
-  --purple: #9b8afb;
-  --purple-dim: rgba(155,138,251,0.1);
-  --text: #e8eaf0;
-  --text2: #8b90a0;
-  --text3: #555a6a;
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'IBM Plex Sans', sans-serif;
-  --radius: 6px;
-  --radius-lg: 10px;
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'IBM Plex Sans',sans-serif;background:#07090F;color:#DDE3F0;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#0D1220}
+::-webkit-scrollbar-thumb{background:#1E2D48;border-radius:3px}
+.card{transition:transform .18s ease,border-color .18s ease,background .18s ease;cursor:pointer;border:1px solid #151E33}
+.card:hover{transform:translateY(-2px);border-color:#2A3A5A!important;background:#111930!important}
+.card.active{background:#111930!important;border-color:#2A3A5A!important}
+.chip{transition:all .15s ease;cursor:pointer;border:none;font-family:'IBM Plex Sans',sans-serif}
+.btn{transition:all .15s ease;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;border:none}
+.btn:hover{opacity:.85}
+input,select{outline:none}
+input:focus{border-color:#2E4A6A!important}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.spin{animation:spin 1s linear infinite;display:inline-block}
+.panel-enter{animation:fadeIn .25s ease}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:10px}
+@media(max-width:700px){
+  .card-grid{grid-template-columns:1fr 1fr}
+  #detail-panel{position:fixed;bottom:0;left:0;right:0;width:100%!important;height:70vh;border-radius:20px 20px 0 0;z-index:200;overflow:auto}
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 14px; }
-body {
-  font-family: var(--sans);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  padding: 2rem 1.5rem 4rem;
+@media(max-width:440px){
+  .card-grid{grid-template-columns:1fr}
 }
-
-.header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 2.5rem;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-.header-left {}
-.eyebrow {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  color: var(--green);
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-h1 {
-  font-family: var(--mono);
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.3;
-}
-.subtitle {
-  font-size: 13px;
-  color: var(--text2);
-  margin-top: 6px;
-  max-width: 480px;
-  line-height: 1.6;
-}
-.score-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  border: 2px solid var(--green);
-  background: var(--green-dim2);
-  flex-shrink: 0;
-}
-.score-num {
-  font-family: var(--mono);
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--green);
-  line-height: 1;
-}
-.score-lbl {
-  font-size: 10px;
-  color: var(--green);
-  opacity: 0.7;
-  margin-top: 2px;
-  letter-spacing: 0.05em;
-}
-
-/* ── layout ── */
-.layout {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 1.5rem;
-  align-items: start;
-}
-@media (max-width: 820px) {
-  .layout { grid-template-columns: 1fr; }
-}
-
-/* ── section ── */
-.section {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
-.sec-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface2);
-}
-.sec-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.sec-title {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-weight: 500;
-}
-.sec-hint {
-  margin-left: auto;
-  font-size: 11px;
-  color: var(--text3);
-}
-.sec-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; }
-
-/* ── filter row ── */
-.filter-row {
-  display: grid;
-  grid-template-columns: 180px 1fr auto;
-  align-items: center;
-  gap: 12px;
-}
-.filter-label {
-  font-size: 13px;
-  color: var(--text);
-  line-height: 1.4;
-}
-.filter-hint {
-  font-size: 11px;
-  color: var(--text3);
-  margin-top: 2px;
-}
-.slider-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-input[type=range] {
-  -webkit-appearance: none;
-  appearance: none;
-  flex: 1;
-  height: 3px;
-  background: var(--border2);
-  border-radius: 2px;
-  outline: none;
-  cursor: pointer;
-}
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  background: var(--green);
-  cursor: pointer;
-  box-shadow: 0 0 0 3px var(--green-dim);
-  transition: box-shadow 0.15s;
-}
-input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px var(--green-dim); }
-.slider-val {
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--green);
-  min-width: 52px;
-  text-align: right;
-  white-space: nowrap;
-}
-
-/* toggle */
-.toggle-wrap { display: flex; align-items: center; gap: 8px; }
-.toggle {
-  position: relative;
-  width: 38px; height: 20px;
-  cursor: pointer;
-}
-.toggle input { opacity: 0; width: 0; height: 0; }
-.toggle-track {
-  position: absolute; inset: 0;
-  background: var(--border2);
-  border-radius: 10px;
-  transition: background 0.2s;
-}
-.toggle input:checked ~ .toggle-track { background: var(--green); }
-.toggle-thumb {
-  position: absolute;
-  top: 3px; left: 3px;
-  width: 14px; height: 14px;
-  background: var(--text2);
-  border-radius: 50%;
-  transition: transform 0.2s, background 0.2s;
-}
-.toggle input:checked ~ .toggle-thumb { transform: translateX(18px); background: #fff; }
-.toggle-label { font-size: 12px; color: var(--text2); }
-
-/* ── themes ── */
-.themes-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  padding: 14px 16px;
-}
-.theme-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
-  user-select: none;
-}
-.theme-chip:hover { border-color: var(--border2); }
-.theme-chip.active { border-color: var(--green); background: var(--green-dim2); }
-.theme-icon { font-size: 16px; line-height: 1; }
-.theme-name { font-size: 12px; font-weight: 500; color: var(--text2); }
-.theme-chip.active .theme-name { color: var(--green); }
-
-/* ── mcap row ── */
-.mcap-pills {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  grid-column: 1/-1;
-}
-.mcap-pill {
-  padding: 5px 12px;
-  border-radius: 20px;
-  border: 1px solid var(--border2);
-  font-family: var(--mono);
-  font-size: 11px;
-  cursor: pointer;
-  color: var(--text2);
-  transition: all 0.15s;
-  user-select: none;
-}
-.mcap-pill.active { border-color: var(--amber); background: var(--amber-dim); color: var(--amber); }
-
-/* ── RIGHT PANEL ── */
-.panel { position: sticky; top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-
-.signal-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-.signal-head {
-  padding: 11px 16px;
-  background: var(--surface2);
-  border-bottom: 1px solid var(--border);
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text2);
-}
-.signal-body { padding: 14px 16px; }
-
-.signal-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-}
-.signal-row:last-child { border-bottom: none; }
-.sig-icon {
-  width: 20px; height: 20px;
-  border-radius: 4px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-.sig-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
-.sig-key { font-family: var(--mono); font-size: 11px; color: var(--text); }
-
-/* query box */
-.query-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-.query-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 11px 16px;
-  background: var(--surface2);
-  border-bottom: 1px solid var(--border);
-}
-.query-title {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text2);
-}
-.copy-btn {
-  font-family: var(--mono);
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 4px;
-  border: 1px solid var(--green);
-  background: transparent;
-  color: var(--green);
-  cursor: pointer;
-  transition: background 0.15s;
-  letter-spacing: 0.05em;
-}
-.copy-btn:hover { background: var(--green-dim); }
-.copy-btn.copied { border-color: var(--blue); color: var(--blue); }
-
-.query-code {
-  font-family: var(--mono);
-  font-size: 11px;
-  line-height: 1.8;
-  color: var(--text2);
-  padding: 14px 16px;
-  white-space: pre-wrap;
-  word-break: break-all;
-  max-height: 280px;
-  overflow-y: auto;
-}
-.query-code .kw { color: var(--green); }
-.query-code .op { color: var(--amber); }
-.query-code .num { color: var(--blue); }
-
-.open-btn {
-  display: block;
-  width: calc(100% - 32px);
-  margin: 0 16px 14px;
-  padding: 10px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border2);
-  background: transparent;
-  color: var(--text2);
-  font-family: var(--mono);
-  font-size: 11px;
-  cursor: pointer;
-  text-align: center;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  transition: all 0.15s;
-  text-decoration: none;
-}
-.open-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
-
-/* ── disclaimer ── */
-.disclaimer {
-  margin-top: 1rem;
-  padding: 10px 14px;
-  background: var(--amber-dim);
-  border: 1px solid rgba(245,166,35,0.2);
-  border-radius: var(--radius);
-  font-size: 11px;
-  color: var(--text2);
-  line-height: 1.6;
-}
-
-/* scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 </style>
 </head>
 <body>
-
-<div class="header">
-  <div class="header-left">
-    <div class="eyebrow">// screener builder v1</div>
-    <h1>5-Year Multibagger Filter</h1>
-    <p class="subtitle">Adjust thresholds below. The query auto-generates for Screener.in. Based on patterns from 2021→2026 multibaggers.</p>
-  </div>
-  <div class="score-badge">
-    <div class="score-num" id="filterCount">0</div>
-    <div class="score-lbl">filters on</div>
-  </div>
-</div>
-
-<div class="layout">
-  <!-- LEFT -->
-  <div class="left-col">
-
-    <!-- SECTOR THEMES -->
-    <div class="section">
-      <div class="sec-head">
-        <div class="sec-dot" style="background:#9b8afb"></div>
-        <div class="sec-title" style="color:#9b8afb">Sector Themes (2025–30)</div>
-        <div class="sec-hint">select all that apply</div>
-      </div>
-      <div class="themes-grid">
-        <div class="theme-chip active" data-theme="Defence" onclick="toggleTheme(this)">
-          <span class="theme-icon">🛡</span><span class="theme-name">Defence</span>
-        </div>
-        <div class="theme-chip active" data-theme="Renewables" onclick="toggleTheme(this)">
-          <span class="theme-icon">⚡</span><span class="theme-name">Renewables</span>
-        </div>
-        <div class="theme-chip active" data-theme="Railways" onclick="toggleTheme(this)">
-          <span class="theme-icon">🚄</span><span class="theme-name">Railways</span>
-        </div>
-        <div class="theme-chip active" data-theme="Data Centres" onclick="toggleTheme(this)">
-          <span class="theme-icon">🖥</span><span class="theme-name">Data Centres</span>
-        </div>
-        <div class="theme-chip" data-theme="Semiconductors" onclick="toggleTheme(this)">
-          <span class="theme-icon">💡</span><span class="theme-name">Semiconductors</span>
-        </div>
-        <div class="theme-chip" data-theme="Nuclear Energy" onclick="toggleTheme(this)">
-          <span class="theme-icon">☢</span><span class="theme-name">Nuclear Energy</span>
-        </div>
-        <div class="theme-chip" data-theme="Shipbuilding" onclick="toggleTheme(this)">
-          <span class="theme-icon">🚢</span><span class="theme-name">Shipbuilding</span>
-        </div>
-        <div class="theme-chip" data-theme="EMS / PLI" onclick="toggleTheme(this)">
-          <span class="theme-icon">🏭</span><span class="theme-name">EMS / PLI</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- GROWTH FILTERS -->
-    <div class="section">
-      <div class="sec-head">
-        <div class="sec-dot" style="background:#00d68f"></div>
-        <div class="sec-title" style="color:#00d68f">Growth Filters</div>
-        <div class="sec-hint">revenue & profit momentum</div>
-      </div>
-      <div class="sec-body">
-
-        <div class="filter-row">
-          <div>
-            <div class="filter-label">Sales Growth (3yr CAGR)</div>
-            <div class="filter-hint">Minimum compound sales growth</div>
-          </div>
-          <div class="slider-wrap">
-            <input type="range" min="5" max="50" value="15" step="1" id="s3yr" oninput="update()">
-            <div class="slider-val" id="s3yr-val">&gt; 15%</div>
-          </div>
-          <label class="toggle"><input type="checkbox" checked id="s3yr-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-
-        <div class="filter-row">
-          <div>
-            <div class="filter-label">Sales Growth (5yr CAGR)</div>
-            <div class="filter-hint">Long-term revenue durability</div>
-          </div>
-          <div class="slider-wrap">
-            <input type="range" min="5" max="40" value="12" step="1" id="s5yr" oninput="update()">
-            <div class="slider-val" id="s5yr-val">&gt; 12%</div>
-          </div>
-          <label class="toggle"><input type="checkbox" checked id="s5yr-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-
-        <div class="filter-row">
-          <div>
-            <div class="filter-label">Profit Growth (3yr)</div>
-            <div class="filter-hint">PAT CAGR over 3 years</div>
-          </div>
-          <div class="slider-wrap">
-            <input type="range" min="5" max="60" value="15" step="1" id="pat3" oninput="update()">
-            <div class="slider-val" id="pat3-val">&gt; 15%</div>
-          </div>
-          <label class="toggle"><input type="checkbox" checked id="pat3-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-
-        <div class="filter-row">
-          <div>
-            <div class="filter-label">Sales growth (TTM)</div>
-            <div class="filter-hint">Recent annual momentum</div>
-          </div>
-          <div class="slider-wrap">
-            <input type="range" min="0" max="50" value="10" step="1" id="sttm" oninput="update()">
-            <div class="slider-val" id="sttm-val">&gt; 10%</div>
-          </div>
-          <label class="toggle"><input type="checkbox" id="sttm-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- QUALITY FILTERS -->
-    <div class="section">
-      <div class="sec-head">
-        <div class="sec-dot" style="background:#4d9ef7"></div>
-        <div class="sec-title" style="color:#4d9ef7">Quality Filters</div>
-        <div class="sec-hint">cash flow & balance sheet</div>
-      </div>
-      <div class="sec-body">
-
-        <div class="filter-row">
-          <div>
-            <div class="filter-label">Return on Equity</div>
-            <div class="filter-hint">Min ROE — capital efficiency</div>
-          </div>
-          <div class="slider-wrap">
-            <input type="range" min="5" max="40" value="15" step="1" id="roe" oninput="update()">
-            <div class="slider-val" id="roe-val">&gt; 15%</div>
-          </div>
-          <label class="toggle"><input type="checkbox" checked id="roe-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-
-        <div class="filter-row">
-          <div>
-            <div class="filter-label">Debt to Equity</div>
-            <div class="filter-hint">Max D/E — avoid over-leverage</div>
-          </div>
-          <div class="slider-wrap">
-            <input type="range" min="0" max="3" value="1" step="0.1" id="de" oninput="update()">
-            <div class="slider-val" id="de-val">&lt; 1.0x</div>
-          </div>
-          <label class="toggle"><input type="checkbox" checked id="de-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-
-        <div class="filter-row">
-          <div>
-            <div class="filter-label">Cash from Operations</div>
-            <div class="filter-hint">Positive CFO (real business)</div>
-          </div>
-          <div class="slider-wrap" style="justify-content: flex-start; padding-left: 4px;">
-            <span style="font-size:12px; color:var(--text2)">CFO must be positive</span>
-          </div>
-          <label class="toggle"><input type="checkbox" checked id="cfo-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-
-        <div class="filter-row">
-          <div>
-            <div class="filter-label">Interest Coverage</div>
-            <div class="filter-hint">Min times interest earned</div>
-          </div>
-          <div class="slider-wrap">
-            <input type="range" min="1" max="15" value="3" step="0.5" id="ic" oninput="update()">
-            <div class="slider-val" id="ic-val">&gt; 3.0x</div>
-          </div>
-          <label class="toggle"><input type="checkbox" id="ic-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- VALUATION & SIZE -->
-    <div class="section">
-      <div class="sec-head">
-        <div class="sec-dot" style="background:#f5a623"></div>
-        <div class="sec-title" style="color:#f5a623">Valuation & Size</div>
-        <div class="sec-hint">don't overpay, find re-rating room</div>
-      </div>
-      <div class="sec-body">
-
-        <div class="filter-row">
-          <div>
-            <div class="filter-label">P/E Ratio</div>
-            <div class="filter-hint">Max price-to-earnings</div>
-          </div>
-          <div class="slider-wrap">
-            <input type="range" min="10" max="120" value="60" step="5" id="pe" oninput="update()">
-            <div class="slider-val" id="pe-val">&lt; 60x</div>
-          </div>
-          <label class="toggle"><input type="checkbox" checked id="pe-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-
-        <div class="filter-row">
-          <div>
-            <div class="filter-label">PEG Ratio</div>
-            <div class="filter-hint">P/E relative to growth rate</div>
-          </div>
-          <div class="slider-wrap">
-            <input type="range" min="0.2" max="3" value="1.5" step="0.1" id="peg" oninput="update()">
-            <div class="slider-val" id="peg-val">&lt; 1.5x</div>
-          </div>
-          <label class="toggle"><input type="checkbox" id="peg-en" onchange="update()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-
-        <div style="grid-column: 1/-1;">
-          <div class="filter-label" style="margin-bottom:8px">Market Cap Range (₹ Cr)</div>
-          <div class="mcap-pills">
-            <div class="mcap-pill" id="mc-micro" onclick="toggleMcap('micro')">Micro &lt;500</div>
-            <div class="mcap-pill active" id="mc-small" onclick="toggleMcap('small')">Small 500–5K</div>
-            <div class="mcap-pill active" id="mc-mid" onclick="toggleMcap('mid')">Mid 5K–50K</div>
-            <div class="mcap-pill" id="mc-large" onclick="toggleMcap('large')">Large &gt;50K</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </div><!-- /left -->
-
-  <!-- RIGHT PANEL -->
-  <div class="panel">
-
-    <!-- Signal checklist -->
-    <div class="signal-box">
-      <div class="signal-head">why this filter works</div>
-      <div class="signal-body">
-        <div class="signal-row">
-          <div class="sig-icon" style="background:var(--purple-dim); color:var(--purple)">01</div>
-          <div class="sig-text"><span class="sig-key">Sector theme</span><br>Govt capex-backed sectors re-rate even average companies. Biggest alpha driver 2021–26.</div>
-        </div>
-        <div class="signal-row">
-          <div class="sig-icon" style="background:var(--green-dim); color:var(--green)">02</div>
-          <div class="sig-text"><span class="sig-key">3yr + 5yr sales CAGR</span><br>Consistent growth across cycles proves the moat is real, not just one good year.</div>
-        </div>
-        <div class="signal-row">
-          <div class="sig-icon" style="background:var(--blue-dim); color:var(--blue)">03</div>
-          <div class="sig-text"><span class="sig-key">Positive CFO</span><br>The single best filter against accounting fraud and promotional stocks. Cash doesn't lie.</div>
-        </div>
-        <div class="signal-row">
-          <div class="sig-icon" style="background:var(--amber-dim); color:var(--amber)">04</div>
-          <div class="sig-text"><span class="sig-key">Small/mid cap</span><br>Re-rating from ₹2K Cr → ₹20K Cr is 10x. Large caps need fundamentals to do same work.</div>
-        </div>
-        <div class="signal-row">
-          <div class="sig-icon" style="background:var(--red-dim); color:var(--red)">05</div>
-          <div class="sig-text"><span class="sig-key">ROE &gt; 15%</span><br>High ROE with low debt = compounding machine. Management knows how to allocate capital.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Query box -->
-    <div class="query-box">
-      <div class="query-head">
-        <div class="query-title">Screener.in query</div>
-        <button class="copy-btn" id="copyBtn" onclick="copyQuery()">copy</button>
-      </div>
-      <div class="query-code" id="queryCode"></div>
-      <a class="open-btn" id="openLink" href="#" target="_blank" onclick="openScreener(event)">↗ open in screener.in</a>
-    </div>
-
-    <div class="disclaimer">
-      ⚠ This is a quantitative pre-filter, not a buy recommendation. Always verify order book, management quality, and competitive moat before investing. Past sector patterns don't guarantee future returns.
-    </div>
-
-  </div>
-
-</div><!-- /layout -->
+<div id="app"></div>
 
 <script>
-const state = {
-  themes: new Set(['Defence','Renewables','Railways','Data Centres']),
-  mcap: new Set(['small','mid'])
+// ─── CSV Parser ───────────────────────────────────────────────────────────
+function parseCSVLine(line){
+  const out=[];let cur='',q=false;
+  for(const ch of line){
+    if(ch==='"')q=!q;
+    else if(ch===','&&!q){out.push(cur);cur='';}
+    else cur+=ch;
+  }
+  out.push(cur);return out;
+}
+
+function parseCSV(raw){
+  const text=raw.replace(/^\uFEFF/,'');
+  const lines=[];let line='',inQ=false;
+  for(const ch of text){
+    if(ch==='"'){inQ=!inQ;line+=ch;}
+    else if(ch==='\n'&&!inQ){if(line.trim())lines.push(line);line='';}
+    else if(ch!=='\r')line+=ch;
+  }
+  if(line.trim())lines.push(line);
+  if(!lines.length)return[];
+  const hdrs=parseCSVLine(lines[0]).map(h=>h.replace(/\s+/g,' ').trim());
+  return lines.slice(1).map(l=>{
+    const v=parseCSVLine(l);const r={};
+    hdrs.forEach((h,i)=>r[h]=(v[i]||'').trim());
+    return r;
+  }).filter(r=>r['SYMBOL']&&r['SYMBOL']!=='-'&&r['SYMBOL']!=='');
+}
+
+function pn(s){
+  if(!s||s==='-')return null;
+  const n=parseFloat(String(s).replace(/,/g,''));
+  return isNaN(n)?null:n;
+}
+function fmtPrice(ltp){
+  if(ltp===null)return'—';
+  return'₹'+ltp.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function fmtVol(s){
+  const n=pn(s);if(n===null)return'—';
+  if(n>=1e7)return(n/1e7).toFixed(1)+' Cr';
+  if(n>=1e5)return(n/1e5).toFixed(1)+' L';
+  if(n>=1e3)return(n/1e3).toFixed(0)+'K';
+  return String(n);
+}
+function fmtPct(n){
+  if(n===null)return'—';
+  return(n>=0?'+':'')+n.toFixed(2)+'%';
+}
+
+// ─── Category Detection ───────────────────────────────────────────────────
+function getCategory(e){
+  const a=(e['UNDERLYING ASSET']||'').toLowerCase();
+  const s=(e['SYMBOL']||'').toLowerCase();
+  if(a.includes('silver')||a.match(/commodity.?silver/))return'Silver';
+  if(a.includes('gold')||s.includes('gold'))return'Gold';
+  if(a.includes('1d rate')||a.includes('liquid')||a.includes('government securities')||
+     a.includes('g-sec')||a.includes('gilt')||a.includes('sdl')||
+     s.includes('liquid')||s.includes('liqgr')||a.includes('nifty1d'))return'Liquid/Debt';
+  if(a.includes('nasdaq')||a.includes('fang+')||a.includes('hang seng')||
+     a.includes('s&p 500')||a.includes('nyse'))return'International';
+  if(a.includes('nifty bank')||a.includes('psu bank')||a.includes('private bank')||a.includes('top 10 bank'))return'Banking';
+  if(a.includes('nifty it')||a.includes(' it index')||(s==='itbees'||s==='itietf'||s==='itetf'||s==='itadd'))return'IT';
+  if(a.includes('pharma')||a.includes('healthcare')||a.includes('health'))return'Healthcare';
+  if(a.includes('defence'))return'Defence';
+  if(a.includes('fmcg'))return'FMCG';
+  if(a.includes('metal')||a.includes('auto')||a.includes('automobile')||
+     a.includes('energy')||a.includes('oil & gas')||a.includes('realty')||
+     a.includes('power')||a.includes('capital market')||a.includes('ipo')||
+     a.includes('consumption')||a.includes('manufacturing')||a.includes(' mnc ')||
+     a.includes('services sector'))return'Sectoral';
+  if(a.includes('pse')||a.includes('cpse')||a.includes('bharat 22')||a.includes('psu'))return'PSU/Govt';
+  if(a.includes('midcap')||a.includes('mid cap'))return'Midcap';
+  if(a.includes('smallcap')||a.includes('small cap')||a.includes('sml'))return'Smallcap';
+  return'Index';
+}
+
+const CAT={
+  'All':          {color:'#7A8AAD',bg:'#0D1220',label:'All ETFs'},
+  'Gold':         {color:'#D4A853',bg:'#1A1200',label:'Gold ETFs'},
+  'Silver':       {color:'#A0ABB8',bg:'#121820',label:'Silver ETFs'},
+  'Index':        {color:'#9B59B6',bg:'#150D20',label:'Market Index ETFs'},
+  'Banking':      {color:'#1ABC9C',bg:'#051512',label:'Banking Sector ETFs'},
+  'IT':           {color:'#4A9ED4',bg:'#061420',label:'Technology / IT ETFs'},
+  'Healthcare':   {color:'#E91E63',bg:'#200610',label:'Healthcare & Pharma ETFs'},
+  'Defence':      {color:'#F39C12',bg:'#1A1005',label:'Defence Sector ETFs'},
+  'Liquid/Debt':  {color:'#5A9BC4',bg:'#061525',label:'Safe / Liquid Parking ETFs'},
+  'International':{color:'#A78BFA',bg:'#110D20',label:'International Market ETFs'},
+  'Midcap':       {color:'#E67E22',bg:'#1A0D05',label:'Mid Cap Company ETFs'},
+  'Smallcap':     {color:'#E74C3C',bg:'#200505',label:'Small Cap Company ETFs'},
+  'PSU/Govt':     {color:'#16A085',bg:'#051510',label:'PSU / Government ETFs'},
+  'FMCG':         {color:'#2ECC71',bg:'#051508',label:'FMCG / Consumer ETFs'},
+  'Sectoral':     {color:'#F97316',bg:'#1A0D00',label:'Sector ETFs (Metal, Auto, Energy…)'},
 };
+const cs=c=>CAT[c]||CAT['All'];
+const CATS=['All','Gold','Silver','Index','Banking','IT','Healthcare','Defence','Liquid/Debt','International','Midcap','Smallcap','PSU/Govt','FMCG','Sectoral'];
+const PERF_FILTERS=['All','▲ Gainers','▼ Losers','Near 52W High','Best 30D'];
+const SORT_OPTIONS=[['value','Top Value (₹)'],['volume','Most Traded'],['pct','Today\'s Movers'],['r1y','Best 1-Year'],['r30d','Best 30-Day']];
 
-function toggleTheme(el) {
-  const t = el.dataset.theme;
-  if (state.themes.has(t)) { state.themes.delete(t); el.classList.remove('active'); }
-  else { state.themes.add(t); el.classList.add('active'); }
-  update();
-}
+// ─── State ────────────────────────────────────────────────────────────────
+let state={
+  etfs:[],dataDate:null,fileName:'etf.csv',
+  loading:true,fetchError:null,
+  category:'All',perf:'All',sort:'value',search:'',
+  selected:null,
+  aiCache:{},aiLoading:false,
+};
+function setState(patch){Object.assign(state,patch);render();}
+function pctColor(n){return n===null?'#4A5F85':n>=0?'#27AE60':'#E74C3C';}
 
-function toggleMcap(key) {
-  const el = document.getElementById('mc-'+key);
-  if (state.mcap.has(key)) { state.mcap.delete(key); el.classList.remove('active'); }
-  else { state.mcap.add(key); el.classList.add('active'); }
-  update();
-}
-
-function val(id) { return parseFloat(document.getElementById(id).value); }
-function enabled(id) { return document.getElementById(id+'-en').checked; }
-
-function update() {
-  // update display values
-  document.getElementById('s3yr-val').textContent = '> '+val('s3yr')+'%';
-  document.getElementById('s5yr-val').textContent = '> '+val('s5yr')+'%';
-  document.getElementById('pat3-val').textContent = '> '+val('pat3')+'%';
-  document.getElementById('sttm-val').textContent = '> '+val('sttm')+'%';
-  document.getElementById('roe-val').textContent = '> '+val('roe')+'%';
-  document.getElementById('de-val').textContent = '< '+val('de').toFixed(1)+'x';
-  document.getElementById('ic-val').textContent = '> '+val('ic').toFixed(1)+'x';
-  document.getElementById('pe-val').textContent = '< '+val('pe')+'x';
-  document.getElementById('peg-val').textContent = '< '+val('peg').toFixed(1)+'x';
-
-  buildQuery();
-}
-
-function buildQuery() {
-  const lines = [];
-
-  // mcap
-  const mcapRanges = [];
-  if (state.mcap.has('micro')) mcapRanges.push('Market Capitalization < 500');
-  if (state.mcap.has('small')) mcapRanges.push('(Market Capitalization > 500 AND Market Capitalization < 5000)');
-  if (state.mcap.has('mid'))   mcapRanges.push('(Market Capitalization > 5000 AND Market Capitalization < 50000)');
-  if (state.mcap.has('large')) mcapRanges.push('Market Capitalization > 50000');
-  if (mcapRanges.length) lines.push('('+mcapRanges.join('\n  OR ')+')');
-
-  if (enabled('s3yr'))  lines.push('Sales growth 3Years > '+val('s3yr'));
-  if (enabled('s5yr'))  lines.push('Sales growth 5Years > '+val('s5yr'));
-  if (enabled('pat3'))  lines.push('Profit growth 3Years > '+val('pat3'));
-  if (enabled('sttm'))  lines.push('Sales growth > '+val('sttm'));
-  if (enabled('roe'))   lines.push('Return on equity > '+val('roe'));
-  if (enabled('de'))    lines.push('Debt to equity < '+val('de').toFixed(1));
-  if (enabled('cfo'))   lines.push('Cash from operating activity > 0');
-  if (enabled('ic'))    lines.push('Interest Coverage Ratio > '+val('ic').toFixed(1));
-  if (enabled('pe'))    lines.push('Price to Earning < '+val('pe'));
-  if (enabled('peg'))   lines.push('PEG Ratio < '+val('peg').toFixed(1));
-
-  const count = lines.length;
-  document.getElementById('filterCount').textContent = count;
-
-  const raw = lines.join('\nAND\n');
-
-  // render highlighted
-  let html = raw
-    .replace(/\b(AND|OR)\b/g, '<span class="op">$1</span>')
-    .replace(/\b(\d+(\.\d+)?)\b/g, '<span class="num">$1</span>')
-    .replace(/(Sales growth|Profit growth|Return on equity|Debt to equity|Cash from operating activity|Interest Coverage Ratio|Price to Earning|PEG Ratio|Market Capitalization)/g, '<span class="kw">$1</span>');
-
-  document.getElementById('queryCode').innerHTML = html || '<span style="color:var(--text3)">// enable at least one filter above</span>';
-}
-
-function copyQuery() {
-  const lines = [];
-  const mcapRanges = [];
-  if (state.mcap.has('micro')) mcapRanges.push('Market Capitalization < 500');
-  if (state.mcap.has('small')) mcapRanges.push('(Market Capitalization > 500 AND Market Capitalization < 5000)');
-  if (state.mcap.has('mid'))   mcapRanges.push('(Market Capitalization > 5000 AND Market Capitalization < 50000)');
-  if (state.mcap.has('large')) mcapRanges.push('Market Capitalization > 50000');
-  if (mcapRanges.length) lines.push('('+mcapRanges.join(' OR ')+')');
-
-  if (enabled('s3yr'))  lines.push('Sales growth 3Years > '+val('s3yr'));
-  if (enabled('s5yr'))  lines.push('Sales growth 5Years > '+val('s5yr'));
-  if (enabled('pat3'))  lines.push('Profit growth 3Years > '+val('pat3'));
-  if (enabled('sttm'))  lines.push('Sales growth > '+val('sttm'));
-  if (enabled('roe'))   lines.push('Return on equity > '+val('roe'));
-  if (enabled('de'))    lines.push('Debt to equity < '+val('de').toFixed(1));
-  if (enabled('cfo'))   lines.push('Cash from operating activity > 0');
-  if (enabled('ic'))    lines.push('Interest Coverage Ratio > '+val('ic').toFixed(1));
-  if (enabled('pe'))    lines.push('Price to Earning < '+val('pe'));
-  if (enabled('peg'))   lines.push('PEG Ratio < '+val('peg').toFixed(1));
-
-  const raw = lines.join(' AND ');
-  navigator.clipboard.writeText(raw).then(() => {
-    const btn = document.getElementById('copyBtn');
-    btn.textContent = 'copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+// ─── Filters ──────────────────────────────────────────────────────────────
+function getFiltered(){
+  let list=state.etfs.filter(e=>{
+    const cat=getCategory(e);
+    if(state.category!=='All'&&cat!==state.category)return false;
+    if(state.search){
+      const q=state.search.toLowerCase();
+      if(!e['SYMBOL'].toLowerCase().includes(q)&&!(e['UNDERLYING ASSET']||'').toLowerCase().includes(q))return false;
+    }
+    const pct=pn(e['%CHNG']);
+    const perf=state.perf;
+    if(perf==='▲ Gainers'&&(pct===null||pct<=0))return false;
+    if(perf==='▼ Losers'&&(pct===null||pct>=0))return false;
+    if(perf==='Near 52W High'){
+      const ltp=pn(e['LTP']),h=pn(e['52W H']);
+      if(!ltp||!h||ltp<h*0.95)return false;
+    }
+    if(perf==='Best 30D'){
+      const d=pn(e['30D %CHNG']);
+      if(d===null||d<=5)return false;
+    }
+    return true;
   });
+  list.sort((a,b)=>{
+    const s=state.sort;
+    if(s==='value')return(pn(b['VALUE (₹ Crores)'])||0)-(pn(a['VALUE (₹ Crores)'])||0);
+    if(s==='volume')return(pn(b['VOLUME'])||0)-(pn(a['VOLUME'])||0);
+    if(s==='pct')return(pn(b['%CHNG'])??-999)-(pn(a['%CHNG'])??-999);
+    if(s==='r1y')return(pn(b['365 D   %CHNG'])??pn(b['365 D %CHNG'])??-999)-(pn(a['365 D   %CHNG'])??pn(a['365 D %CHNG'])??-999);
+    if(s==='r30d')return(pn(b['30D  %CHNG'])??pn(b['30D %CHNG'])??-999)-(pn(a['30D  %CHNG'])??pn(a['30D %CHNG'])??-999);
+    return 0;
+  });
+  return list;
 }
 
-function openScreener(e) {
-  e.preventDefault();
-  window.open('https://www.screener.in/screen/raw/', '_blank');
+// ─── AI ───────────────────────────────────────────────────────────────────
+async function fetchAI(etf){
+  const sym=etf['SYMBOL'];
+  if(state.aiCache[sym]||state.aiLoading)return;
+  setState({aiLoading:true});
+  const cat=getCategory(etf);
+  const ltp30=etf['30D  %CHNG']||etf['30D %CHNG']||'-';
+  const ltp365=etf['365 D   %CHNG']||etf['365 D %CHNG']||'-';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:900,
+        messages:[{role:'user',content:`You are an Indian financial markets expert helping retail investors understand ETFs listed on NSE India.
+
+ETF Symbol: ${sym}
+Tracks: ${etf['UNDERLYING ASSET']}
+Category: ${cat}
+Current Price (LTP): ₹${etf['LTP']}
+Today's Change: ${etf['%CHNG']}%
+30-Day Return: ${ltp30}%
+1-Year Return: ${ltp365}%
+52-Week High: ₹${etf['52W H']}
+52-Week Low: ₹${etf['52W L']}
+Today's Traded Value: ₹${etf['VALUE (₹ Crores)']} Crores
+Volume: ${etf['VOLUME']} units
+
+Respond in plain English for a first-time investor. Return ONLY valid JSON, no markdown, no explanation outside JSON:
+{"what":"2-3 simple sentences explaining what this ETF tracks and how it works in plain terms","suitable_for":"1-2 sentences describing the ideal investor for this ETF","pros":["benefit 1","benefit 2","benefit 3"],"cons":["risk or drawback 1","risk or drawback 2","risk or drawback 3"],"risk_level":"Low","investment_horizon":"Long-term (3+ years)"}`}]
+      })
+    });
+    const data=await res.json();
+    const txt=data.content?.[0]?.text||'{}';
+    const cleaned=txt.replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(cleaned);
+    setState({aiCache:{...state.aiCache,[sym]:parsed},aiLoading:false});
+  }catch(err){
+    setState({aiCache:{...state.aiCache,[sym]:{error:true}},aiLoading:false});
+  }
 }
 
-update();
+// ─── File Handlers ────────────────────────────────────────────────────────
+function loadFromText(text, name){
+  const rows=parseCSV(text);
+  const date=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+  setState({etfs:rows,dataDate:date,fileName:name||'etf.csv',loading:false,fetchError:null,selected:null,category:'All',perf:'All',search:'',aiCache:{}});
+}
+
+// Manual override: still allow picking a file via button
+function loadFile(file){
+  const reader=new FileReader();
+  reader.onload=e=>loadFromText(e.target.result, file.name);
+  reader.readAsText(file);
+}
+
+// Auto-load etf.csv from same folder on page boot
+async function autoLoad(){
+  try{
+    const res=await fetch('etf.csv?_='+Date.now());
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const text=await res.text();
+    loadFromText(text,'etf.csv');
+  }catch(err){
+    setState({loading:false,fetchError:'Could not load etf.csv — make sure the file is in the same folder as this HTML file.'});
+  }
+}
+
+// ─── Element builder ──────────────────────────────────────────────────────
+function el(tag,attrs,children){
+  const e=document.createElement(tag);
+  if(attrs)Object.entries(attrs).forEach(([k,v])=>{
+    if(k==='style'&&typeof v==='object'){Object.assign(e.style,v);}
+    else if(k==='class')e.className=v;
+    else if(k.startsWith('on'))e.addEventListener(k.slice(2).toLowerCase(),v);
+    else e.setAttribute(k,v);
+  });
+  if(Array.isArray(children))children.forEach(c=>{if(c!=null)e.appendChild(typeof c==='string'?document.createTextNode(c):c)});
+  else if(children!=null)e.appendChild(typeof children==='string'?document.createTextNode(children):children);
+  return e;
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────
+function render(){
+  const app=document.getElementById('app');
+  app.innerHTML='';
+  const wrap=el('div',{style:{display:'flex',flexDirection:'column',minHeight:'100vh'}});
+  wrap.appendChild(buildHeader());
+  if(state.loading)wrap.appendChild(buildLoadingState());
+  else if(state.fetchError||state.etfs.length===0)wrap.appendChild(buildErrorState());
+  else wrap.appendChild(buildExplorer());
+  app.appendChild(wrap);
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────
+function buildHeader(){
+  const h=el('div',{style:{
+    position:'sticky',top:'0',zIndex:'100',
+    background:'#07090F',borderBottom:'1px solid #151E33',
+    padding:'14px 22px',display:'flex',alignItems:'center',
+    justifyContent:'space-between',gap:'12px',flexWrap:'wrap'
+  }});
+
+  const logo=el('div',{style:{display:'flex',alignItems:'center',gap:'12px'}});
+  const icon=el('div',{style:{width:'38px',height:'38px',borderRadius:'10px',background:'#1A1200',border:'1px solid rgba(212,168,83,0.3)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px'}},'📊');
+  const titleWrap=el('div',{});
+  titleWrap.appendChild(el('div',{style:{fontFamily:'Syne',fontWeight:'800',fontSize:'19px',letterSpacing:'-0.3px'}},'India ETF Explorer'));
+  if(state.etfs.length>0){
+    titleWrap.appendChild(el('div',{style:{fontSize:'10px',color:'#3D4F6E',marginTop:'1px'}},`Data: ${state.dataDate}  ·  ${state.etfs.length} ETFs  ·  ${state.fileName||'etf.csv'}`));
+  }else if(state.loading){
+    titleWrap.appendChild(el('div',{style:{fontSize:'10px',color:'#3D4F6E',marginTop:'1px'}},'Loading etf.csv…'));
+  }else{
+    titleWrap.appendChild(el('div',{style:{fontSize:'10px',color:'#E74C3C',marginTop:'1px'}},'etf.csv not found — see instructions below'));
+  }
+  logo.appendChild(icon);logo.appendChild(titleWrap);
+
+  const right=el('div',{style:{display:'flex',gap:'8px',alignItems:'center'}});
+
+  if(state.etfs.length>0){
+    const si=el('input',{type:'text',placeholder:'Search symbol or asset…',style:{background:'#0D1220',border:'1px solid #1A2540',borderRadius:'8px',padding:'7px 14px',color:'#DDE3F0',fontSize:'13px',width:'220px',fontFamily:"'IBM Plex Sans',sans-serif"}});
+    si.value=state.search;
+    si.addEventListener('input',ev=>setState({search:ev.target.value}));
+    right.appendChild(si);
+  }
+
+  const fi=el('input',{type:'file',accept:'.csv',style:{display:'none'},id:'fileInput'});
+  fi.addEventListener('change',ev=>{const f=ev.target.files[0];if(f)loadFile(f);ev.target.value='';});
+
+  // Reload button — re-fetches etf.csv from server
+  const rb=el('button',{class:'btn',style:{background:'transparent',color:'#4A5F85',border:'1px solid #1A2540',borderRadius:'8px',padding:'8px 14px',fontWeight:'600',fontSize:'12px',cursor:'pointer'}}, '↻ Reload');
+  rb.addEventListener('click',()=>{setState({loading:true,fetchError:null});autoLoad();});
+
+  const ub=el('button',{class:'btn',style:{background:'#D4A853',color:'#07090F',borderRadius:'8px',padding:'8px 16px',fontWeight:'700',fontSize:'13px',fontFamily:'Syne',cursor:'pointer',marginLeft:'4px'}},'↑ Override CSV');
+  ub.addEventListener('click',()=>document.getElementById('fileInput')?.click());
+  right.appendChild(fi);
+  if(state.etfs.length>0||state.fetchError)right.appendChild(rb);
+  right.appendChild(ub);
+  h.appendChild(logo);h.appendChild(right);
+  return h;
+}
+
+// ─── Loading State ────────────────────────────────────────────────────────
+function buildLoadingState(){
+  const wrap=el('div',{style:{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',flex:'1',padding:'60px 20px',textAlign:'center'}});
+  wrap.appendChild(el('div',{class:'spin',style:{fontSize:'36px',display:'block',marginBottom:'20px'}},'⟳'));
+  wrap.appendChild(el('div',{style:{fontFamily:'Syne',fontWeight:'700',fontSize:'18px',marginBottom:'8px'}},'Loading etf.csv…'));
+  wrap.appendChild(el('div',{style:{fontSize:'13px',color:'#4A5F85'}},'Reading the file from the same folder as this page.'));
+  return wrap;
+}
+
+// ─── Error State ──────────────────────────────────────────────────────────
+function buildErrorState(){
+  const wrap=el('div',{style:{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',flex:'1',padding:'40px 20px',textAlign:'center'}});
+
+  const box=el('div',{style:{maxWidth:'520px',width:'100%',background:'#0D1220',border:'1px solid #2A1515',borderRadius:'16px',padding:'32px 28px',textAlign:'left'}});
+  box.appendChild(el('div',{style:{fontSize:'36px',marginBottom:'16px',textAlign:'center'}},'⚠️'));
+  box.appendChild(el('div',{style:{fontFamily:'Syne',fontWeight:'800',fontSize:'20px',marginBottom:'8px',textAlign:'center'}},state.fetchError||'etf.csv not found'));
+
+  box.appendChild(el('div',{style:{fontSize:'13px',color:'#4A5F85',marginBottom:'24px',lineHeight:'1.8',textAlign:'center'}},
+    'The page tried to load etf.csv automatically but could not find it.\nFollow the steps below to get it working.'));
+
+  const stepsTitle=el('div',{style:{fontSize:'10px',fontWeight:'700',color:'#D4A853',letterSpacing:'1.2px',textTransform:'uppercase',marginBottom:'14px'}},'How to set it up');
+  box.appendChild(stepsTitle);
+
+  const steps=[
+    ['1','Download your daily ETF data CSV from NSE MarketWatch'],
+    ['2','Rename the file to exactly: etf.csv (all lowercase)'],
+    ['3','Place etf.csv in the same folder as this HTML file'],
+    ['4','Open or refresh this page — it loads automatically'],
+  ];
+  steps.forEach(([n,t])=>{
+    const row=el('div',{style:{display:'flex',gap:'12px',marginBottom:'11px',alignItems:'flex-start'}});
+    row.appendChild(el('div',{style:{width:'24px',height:'24px',borderRadius:'50%',background:'#1A1200',color:'#D4A853',fontSize:'11px',fontWeight:'700',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:'0',marginTop:'1px'}},n));
+    row.appendChild(el('div',{style:{fontSize:'13px',color:'#7A8AAD',lineHeight:'1.6'}},t));
+    box.appendChild(row);
+  });
+
+  // Divider
+  box.appendChild(el('div',{style:{borderTop:'1px solid #151E33',margin:'20px 0'}},''));
+
+  box.appendChild(el('div',{style:{fontSize:'11px',color:'#3D4F6E',marginBottom:'14px',textAlign:'center'}},'Or manually pick any ETF CSV file:'));
+
+  const fi3=el('input',{type:'file',accept:'.csv',style:{display:'none'},id:'fileInput'});
+  fi3.addEventListener('change',ev=>{const f=ev.target.files[0];if(f)loadFile(f);ev.target.value='';});
+  box.appendChild(fi3);
+
+  const manualBtn=el('button',{class:'btn',style:{
+    width:'100%',background:'#D4A853',color:'#07090F',borderRadius:'10px',
+    padding:'12px',fontFamily:'Syne',fontWeight:'700',fontSize:'14px',cursor:'pointer'
+  }},'↑ Pick ETF CSV file manually');
+  manualBtn.addEventListener('click',()=>document.getElementById('fileInput')?.click());
+  box.appendChild(manualBtn);
+
+  wrap.appendChild(box);
+  return wrap;
+}
+
+// ─── Explorer ─────────────────────────────────────────────────────────────
+function buildExplorer(){
+  const wrap=el('div',{style:{display:'flex',flex:'1',height:'calc(100vh - 65px)',overflow:'hidden',position:'relative'}});
+
+  const left=el('div',{style:{flex:'1',overflow:'auto',padding:'16px 18px 32px'}});
+  left.appendChild(buildFilters());
+  const filtered=getFiltered();
+  left.appendChild(el('div',{style:{fontSize:'11px',color:'#3D4F6E',marginBottom:'12px'}},
+    filtered.length===0?'No ETFs match your filters':`Showing ${filtered.length} ETF${filtered.length!==1?'s':''}`));
+  left.appendChild(buildGrid(filtered));
+
+  wrap.appendChild(left);
+  if(state.selected)wrap.appendChild(buildDetailPanel(state.selected));
+  return wrap;
+}
+
+// ─── Filters ─────────────────────────────────────────────────────────────
+function buildFilters(){
+  const wrap=el('div',{style:{marginBottom:'14px'}});
+
+  const catLabel=el('div',{style:{fontSize:'10px',fontWeight:'600',color:'#3D4F6E',letterSpacing:'1.2px',textTransform:'uppercase',marginBottom:'8px'}},'Filter by Category');
+  wrap.appendChild(catLabel);
+
+  const chipRow=el('div',{style:{display:'flex',flexWrap:'wrap',gap:'5px',marginBottom:'14px'}});
+  CATS.filter(c=>c==='All'||state.etfs.some(e=>getCategory(e)===c)).forEach(c=>{
+    const style=cs(c);
+    const active=state.category===c;
+    const count=c==='All'?state.etfs.length:state.etfs.filter(e=>getCategory(e)===c).length;
+    const chip=el('button',{class:'chip',title:style.label||c,style:{
+      background:active?style.color:style.bg,color:active?'#07090F':style.color,
+      border:`1px solid ${active?style.color:style.color+'55'}`,
+      borderRadius:'20px',padding:'5px 12px 5px 10px',
+      fontSize:'12px',fontWeight:active?'700':'500',
+      display:'flex',alignItems:'center',gap:'5px',cursor:'pointer'
+    }});
+    chip.appendChild(document.createTextNode(c));
+    if(c!=='All'){chip.appendChild(el('span',{style:{fontSize:'10px',opacity:'0.6',fontFamily:"'IBM Plex Mono',monospace"}},String(count)));}
+    chip.addEventListener('click',()=>setState({category:c,selected:null}));
+    chipRow.appendChild(chip);
+  });
+  wrap.appendChild(chipRow);
+
+  const row2=el('div',{style:{display:'flex',gap:'20px',flexWrap:'wrap',marginBottom:'4px'}});
+
+  const perfWrap=el('div',{});
+  perfWrap.appendChild(el('div',{style:{fontSize:'10px',fontWeight:'600',color:'#3D4F6E',letterSpacing:'1.2px',textTransform:'uppercase',marginBottom:'6px'}},'Show'));
+  const perfRow=el('div',{style:{display:'flex',gap:'4px',flexWrap:'wrap'}});
+  PERF_FILTERS.forEach(p=>{
+    const active=state.perf===p;
+    const btn=el('button',{class:'btn',style:{background:active?'#151E33':'transparent',color:active?'#DDE3F0':'#4A5F85',border:`1px solid ${active?'#2A3A5A':'#151E33'}`,borderRadius:'6px',padding:'5px 10px',fontSize:'11px',fontWeight:active?'600':'400',cursor:'pointer'}},p);
+    btn.addEventListener('click',()=>setState({perf:p}));
+    perfRow.appendChild(btn);
+  });
+  perfWrap.appendChild(perfRow);
+
+  const sortWrap=el('div',{});
+  sortWrap.appendChild(el('div',{style:{fontSize:'10px',fontWeight:'600',color:'#3D4F6E',letterSpacing:'1.2px',textTransform:'uppercase',marginBottom:'6px'}},'Sort by'));
+  const sortRow=el('div',{style:{display:'flex',gap:'4px',flexWrap:'wrap'}});
+  SORT_OPTIONS.forEach(([k,lbl])=>{
+    const active=state.sort===k;
+    const btn=el('button',{class:'btn',style:{background:active?'#151E33':'transparent',color:active?'#DDE3F0':'#4A5F85',border:`1px solid ${active?'#2A3A5A':'#151E33'}`,borderRadius:'6px',padding:'5px 10px',fontSize:'11px',fontWeight:active?'600':'400',cursor:'pointer'}},lbl);
+    btn.addEventListener('click',()=>setState({sort:k}));
+    sortRow.appendChild(btn);
+  });
+  sortWrap.appendChild(sortRow);
+
+  row2.appendChild(perfWrap);row2.appendChild(sortWrap);
+  wrap.appendChild(row2);
+  return wrap;
+}
+
+// ─── Grid ─────────────────────────────────────────────────────────────────
+function buildGrid(filtered){
+  const grid=el('div',{class:'card-grid'});
+  filtered.forEach(etf=>grid.appendChild(buildCard(etf)));
+  if(!filtered.length){
+    const empty=el('div',{style:{gridColumn:'1/-1',textAlign:'center',padding:'60px 20px',color:'#3D4F6E'}});
+    empty.appendChild(el('div',{style:{fontSize:'36px',marginBottom:'12px'}},'🔍'));
+    empty.appendChild(el('div',{style:{fontSize:'15px',fontWeight:'600',marginBottom:'6px'}},'No ETFs match your filters'));
+    empty.appendChild(el('div',{style:{fontSize:'13px'}},'Try changing the category, performance filter, or search term'));
+    grid.appendChild(empty);
+  }
+  return grid;
+}
+
+function buildCard(etf){
+  const sym=etf['SYMBOL'];
+  const cat=getCategory(etf);
+  const style=cs(cat);
+  const ltp=pn(etf['LTP']);
+  const pct=pn(etf['%CHNG']);
+  const h52=pn(etf['52W H']);
+  const l52=pn(etf['52W L']);
+  const d30=pn(etf['30D  %CHNG'])??pn(etf['30D %CHNG']);
+  const d365=pn(etf['365 D   %CHNG'])??pn(etf['365 D %CHNG']);
+  const isActive=state.selected&&state.selected['SYMBOL']===sym;
+  const rangePos=(ltp&&h52&&l52&&h52!==l52)?Math.max(0,Math.min(100,((ltp-l52)/(h52-l52))*100)):null;
+
+  const card=el('div',{class:`card${isActive?' active':''}`,style:{background:isActive?'#111930':'#0D1220',borderRadius:'12px',padding:'14px 15px',position:'relative'}});
+  card.addEventListener('click',()=>{setState({selected:etf});fetchAI(etf);});
+
+  const top=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'10px'}});
+  const topLeft=el('div',{style:{flex:'1',minWidth:'0'}});
+  topLeft.appendChild(el('div',{style:{fontFamily:"'IBM Plex Mono',monospace",fontWeight:'600',fontSize:'14px',letterSpacing:'0.5px'}},sym));
+  topLeft.appendChild(el('div',{style:{fontSize:'10px',color:'#3D4F6E',marginTop:'2px',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'162px'}},etf['UNDERLYING ASSET']||''));
+  const badge=el('span',{style:{background:style.bg,color:style.color,border:`1px solid ${style.color}35`,borderRadius:'12px',padding:'2px 8px',fontSize:'9px',fontWeight:'700',letterSpacing:'0.5px',textTransform:'uppercase',whiteSpace:'nowrap',flexShrink:'0',marginLeft:'6px'}},cat);
+  top.appendChild(topLeft);top.appendChild(badge);
+  card.appendChild(top);
+
+  const priceRow=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'baseline',marginBottom:'10px'}});
+  priceRow.appendChild(el('div',{style:{fontFamily:"'IBM Plex Mono',monospace",fontWeight:'600',fontSize:'18px'}},fmtPrice(ltp)));
+  const pctEl=el('div',{style:{fontFamily:"'IBM Plex Mono',monospace",fontSize:'13px',fontWeight:'600',color:pctColor(pct)}});
+  pctEl.textContent=pct!==null?(pct>=0?'▲ ':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—';
+  priceRow.appendChild(pctEl);
+  card.appendChild(priceRow);
+
+  if(rangePos!==null){
+    const rw=el('div',{style:{marginBottom:'10px'}});
+    const bar=el('div',{style:{height:'3px',background:'#151E33',borderRadius:'2px',position:'relative'}});
+    bar.appendChild(el('div',{style:{position:'absolute',left:'0',width:rangePos+'%',height:'100%',background:pct!==null&&pct>=0?'#27AE60':'#E74C3C',borderRadius:'2px'}},''));
+    bar.appendChild(el('div',{style:{position:'absolute',left:rangePos+'%',top:'-3px',width:'9px',height:'9px',borderRadius:'50%',background:'#DDE3F0',transform:'translateX(-50%)',border:'2px solid #07090F'}},''));
+    rw.appendChild(bar);
+    const rl=el('div',{style:{display:'flex',justifyContent:'space-between',fontSize:'9px',color:'#3D4F6E',marginTop:'3px'}});
+    rl.appendChild(el('span',{},'L ₹'+(l52?.toFixed(0)||'?')));
+    rl.appendChild(el('span',{},'H ₹'+(h52?.toFixed(0)||'?')));
+    rw.appendChild(rl);card.appendChild(rw);
+  }
+
+  const sr=el('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'5px'}});
+  [[' 30D',d30,true],['  1Y',d365,true],['₹Cr',etf['VALUE (₹ Crores)'],false]].forEach(([lbl,val,isPct])=>{
+    const cell=el('div',{style:{background:'#07090F',borderRadius:'6px',padding:'5px 6px'}});
+    cell.appendChild(el('div',{style:{fontSize:'8px',color:'#3D4F6E',marginBottom:'2px'}},lbl.trim()));
+    const ve=el('div',{style:{fontFamily:"'IBM Plex Mono',monospace",fontSize:'10px',fontWeight:'600',color:isPct&&val!==null?pctColor(val):'#DDE3F0'}});
+    if(isPct)ve.textContent=val!==null?(val>=0?'+':'')+val.toFixed(2)+'%':'—';
+    else ve.textContent=(val&&val!=='-')?'₹'+val:'—';
+    cell.appendChild(ve);sr.appendChild(cell);
+  });
+  card.appendChild(sr);
+  return card;
+}
+
+// ─── Detail Panel ─────────────────────────────────────────────────────────
+function buildDetailPanel(etf){
+  const sym=etf['SYMBOL'];
+  const cat=getCategory(etf);
+  const style=cs(cat);
+  const ltp=pn(etf['LTP']);
+  const pct=pn(etf['%CHNG']);
+  const h52=pn(etf['52W H']);
+  const l52=pn(etf['52W L']);
+  const d30=pn(etf['30D  %CHNG'])??pn(etf['30D %CHNG']);
+  const d365=pn(etf['365 D   %CHNG'])??pn(etf['365 D %CHNG']);
+
+  const panel=el('div',{class:'panel-enter',id:'detail-panel',style:{width:'340px',borderLeft:'1px solid #151E33',background:'#0A0D18',overflow:'auto',padding:'20px 18px 32px',flexShrink:'0'}});
+
+  const ph=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'16px'}});
+  const hl=el('div',{style:{flex:'1',minWidth:'0'}});
+  hl.appendChild(el('div',{style:{fontFamily:"'IBM Plex Mono',monospace",fontWeight:'600',fontSize:'20px',marginBottom:'4px'}},sym));
+  hl.appendChild(el('div',{style:{fontSize:'12px',color:'#4A5F85',lineHeight:'1.5',paddingRight:'8px'}},etf['UNDERLYING ASSET']||''));
+  const cb=el('div',{style:{marginTop:'8px'}});
+  cb.appendChild(el('span',{style:{background:style.bg,color:style.color,border:`1px solid ${style.color}40`,borderRadius:'10px',padding:'3px 10px',fontSize:'10px',fontWeight:'700'}},cat));
+  cb.appendChild(el('span',{style:{fontSize:'10px',color:'#3D4F6E',marginLeft:'6px'}},style.label||''));
+  hl.appendChild(cb);
+  const closeBtn=el('button',{style:{background:'none',border:'none',color:'#3D4F6E',fontSize:'22px',cursor:'pointer',padding:'0',lineHeight:'1',flexShrink:'0'}},'×');
+  closeBtn.addEventListener('click',()=>setState({selected:null}));
+  ph.appendChild(hl);ph.appendChild(closeBtn);
+  panel.appendChild(ph);
+
+  // Price card
+  const pc=el('div',{style:{background:'#0D1220',border:'1px solid #151E33',borderRadius:'12px',padding:'16px',marginBottom:'12px'}});
+  const pr=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'baseline',marginBottom:'4px'}});
+  pr.appendChild(el('div',{style:{fontFamily:"'IBM Plex Mono',monospace",fontWeight:'600',fontSize:'26px'}},fmtPrice(ltp)));
+  const pb=el('div',{style:{fontFamily:"'IBM Plex Mono',monospace",fontSize:'15px',fontWeight:'600',color:pctColor(pct)}});
+  pb.textContent=pct!==null?fmtPct(pct)+'  today':'—';
+  pr.appendChild(pb);pc.appendChild(pr);
+  pc.appendChild(el('div',{style:{fontSize:'10px',color:'#3D4F6E',marginBottom:'12px'}},`Prev Close: ₹${etf['PREV. CLOSE']||'—'}  ·  NAV: ₹${etf['NAV']||'—'}`));
+
+  if(h52&&l52&&ltp){
+    const pos=Math.max(0,Math.min(100,((ltp-l52)/(h52-l52))*100));
+    const rll=el('div',{style:{display:'flex',justifyContent:'space-between',fontSize:'9px',color:'#3D4F6E',marginBottom:'5px'}});
+    rll.appendChild(el('span',{},'52W Low: ₹'+l52.toFixed(2)));
+    rll.appendChild(el('span',{},'52W High: ₹'+h52.toFixed(2)));
+    pc.appendChild(rll);
+    const tb=el('div',{style:{height:'5px',background:'#151E33',borderRadius:'3px',position:'relative'}});
+    tb.appendChild(el('div',{style:{position:'absolute',left:'0',width:pos+'%',height:'100%',background:'linear-gradient(to right,#E74C3C,#F39C12,#27AE60)',borderRadius:'3px'}},''));
+    tb.appendChild(el('div',{style:{position:'absolute',left:pos+'%',top:'-3.5px',width:'12px',height:'12px',borderRadius:'50%',background:'#DDE3F0',transform:'translateX(-50%)',border:'2px solid #0A0D18'}},''));
+    pc.appendChild(tb);
+    pc.appendChild(el('div',{style:{fontSize:'9px',color:'#4A5F85',marginTop:'6px',textAlign:'center'}},`At ${pos.toFixed(0)}% of its 52-week range`));
+  }
+  panel.appendChild(pc);
+
+  const sg=el('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginBottom:'16px'}});
+  [['30-Day Return',d30,true],['1-Year Return',d365,true],['Volume Traded',fmtVol(etf['VOLUME']),false],['Value (₹ Crores)',etf['VALUE (₹ Crores)']&&etf['VALUE (₹ Crores)']!=='-'?'₹'+etf['VALUE (₹ Crores)']:'—',false]].forEach(([lbl,val,isPct])=>{
+    const cell=el('div',{style:{background:'#0D1220',border:'1px solid #151E33',borderRadius:'8px',padding:'10px 12px'}});
+    cell.appendChild(el('div',{style:{fontSize:'10px',color:'#3D4F6E',marginBottom:'4px'}},lbl));
+    const v=el('div',{style:{fontFamily:"'IBM Plex Mono',monospace",fontSize:'13px',fontWeight:'600',color:isPct&&typeof val==='number'?pctColor(val):'#DDE3F0'}});
+    if(isPct)v.textContent=val!==null?fmtPct(val):'—';else v.textContent=val||'—';
+    cell.appendChild(v);sg.appendChild(cell);
+  });
+  panel.appendChild(sg);
+
+  // AI Section
+  const as=el('div',{style:{borderTop:'1px solid #151E33',paddingTop:'16px'}});
+  const ah=el('div',{style:{display:'flex',alignItems:'center',gap:'6px',marginBottom:'14px'}});
+  ah.appendChild(el('span',{style:{color:'#D4A853',fontSize:'13px'}},'✦'));
+  ah.appendChild(el('span',{style:{fontSize:'10px',fontWeight:'700',color:'#D4A853',letterSpacing:'1.5px',textTransform:'uppercase'}},'AI Analysis'));
+  as.appendChild(ah);
+
+  const ai=state.aiCache[sym];
+  if(state.aiLoading&&!ai){
+    const ld=el('div',{style:{textAlign:'center',padding:'28px 0',color:'#4A5F85'}});
+    ld.appendChild(el('div',{class:'spin',style:{fontSize:'24px',display:'block',marginBottom:'10px'}},'⟳'));
+    ld.appendChild(el('div',{style:{fontSize:'13px'}},'Analysing this ETF…'));
+    as.appendChild(ld);
+  }else if(ai){
+    if(ai.error){
+      as.appendChild(el('div',{style:{fontSize:'13px',color:'#E74C3C'}},'Analysis unavailable. Please try again.'));
+    }else{
+      const rc={'Low':['#051508','#2ECC71'],'Medium':['#1A1005','#E67E22'],'High':['#200505','#E74C3C']};
+      const rcc=rc[ai.risk_level]||rc['Medium'];
+      const br=el('div',{style:{display:'flex',gap:'8px',marginBottom:'14px',flexWrap:'wrap'}});
+      br.appendChild(el('div',{style:{background:rcc[0],color:rcc[1],border:'1px solid '+rcc[1],borderRadius:'6px',padding:'4px 10px',fontSize:'11px',fontWeight:'700'}},`⚡ ${ai.risk_level||'?'} Risk`));
+      br.appendChild(el('div',{style:{background:'#060E1E',color:'#7B9ED9',border:'1px solid rgba(91,156,196,0.3)',borderRadius:'6px',padding:'4px 10px',fontSize:'11px',fontWeight:'600'}},`⏱ ${ai.investment_horizon||'—'}`));
+      as.appendChild(br);
+
+      [['What is this ETF?',ai.what],['Best suited for',ai.suitable_for]].forEach(([heading,body])=>{
+        if(!body)return;
+        const sec=el('div',{style:{marginBottom:'14px'}});
+        sec.appendChild(el('div',{style:{fontSize:'10px',fontWeight:'700',color:'#6B7DA3',textTransform:'uppercase',letterSpacing:'0.8px',marginBottom:'6px'}},heading));
+        sec.appendChild(el('div',{style:{fontSize:'13px',color:'#B0BFDA',lineHeight:'1.65'}},body));
+        as.appendChild(sec);
+      });
+
+      if(ai.pros?.length){
+        const ps=el('div',{style:{marginBottom:'14px'}});
+        ps.appendChild(el('div',{style:{fontSize:'10px',fontWeight:'700',color:'#27AE60',textTransform:'uppercase',letterSpacing:'0.8px',marginBottom:'8px'}},'✓ Pros'));
+        ai.pros.forEach(p=>{
+          const row=el('div',{style:{display:'flex',gap:'8px',marginBottom:'7px',alignItems:'flex-start'}});
+          row.appendChild(el('span',{style:{color:'#27AE60',flexShrink:'0',marginTop:'3px',fontSize:'8px'}},'●'));
+          row.appendChild(el('span',{style:{fontSize:'13px',color:'#B0BFDA',lineHeight:'1.55'}},p));
+          ps.appendChild(row);
+        });as.appendChild(ps);
+      }
+      if(ai.cons?.length){
+        const cs2=el('div',{style:{marginBottom:'16px'}});
+        cs2.appendChild(el('div',{style:{fontSize:'10px',fontWeight:'700',color:'#E74C3C',textTransform:'uppercase',letterSpacing:'0.8px',marginBottom:'8px'}},'✗ Risks & Cons'));
+        ai.cons.forEach(c=>{
+          const row=el('div',{style:{display:'flex',gap:'8px',marginBottom:'7px',alignItems:'flex-start'}});
+          row.appendChild(el('span',{style:{color:'#E74C3C',flexShrink:'0',marginTop:'3px',fontSize:'8px'}},'●'));
+          row.appendChild(el('span',{style:{fontSize:'13px',color:'#B0BFDA',lineHeight:'1.55'}},c));
+          cs2.appendChild(row);
+        });as.appendChild(cs2);
+      }
+      as.appendChild(el('div',{style:{background:'#0D1220',borderRadius:'8px',padding:'9px 11px',fontSize:'10px',color:'#3D4F6E',lineHeight:'1.5'}},'⚠ AI-generated analysis for informational purposes only. Not financial or investment advice. Consult a SEBI-registered financial advisor before investing.'));
+    }
+  }else{
+    const lo=el('div',{style:{textAlign:'center',padding:'16px 0',color:'#3D4F6E',fontSize:'13px'}});
+    lo.textContent='Loading analysis…';
+    as.appendChild(lo);
+  }
+  panel.appendChild(as);
+  return panel;
+}
+
+// ─── Boot ─────────────────────────────────────────────────────────────────
+render(); // show loading spinner immediately
+autoLoad(); // then fetch etf.csv
 </script>
 </body>
 </html>
