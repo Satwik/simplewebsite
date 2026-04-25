@@ -100,17 +100,9 @@ nav {
   display: flex; align-items: center; justify-content: space-between;
 }
 .nav-logo {
-  display: flex; align-items: center; gap: 10px;
-  font-family: 'Fraunces', serif;
-  font-weight: 700; font-size: 18px;
-  color: var(--md-primary);
+  display: flex; align-items: center;
 }
-.nav-logo .dot {
-  width: 32px; height: 32px; border-radius: 10px;
-  background: var(--md-primary);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-}
+.nav-logo svg { display: block; flex-shrink: 0; }
 .nav-cta {
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--md-primary);
@@ -127,11 +119,38 @@ nav {
 /* ── Hero ─────────────────────────────────────────────────── */
 .hero {
   min-height: 100vh;
-  padding: 100px 24px 64px;
-  display: flex; flex-direction: column; align-items: center;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+  padding: 80px 48px 64px;
+  display: flex; flex-direction: row; align-items: center;
+  justify-content: center; gap: 48px;
+  position: relative; overflow: hidden;
+}
+.hero-logo-col {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 1;
+  animation: floatHero 5s ease-in-out infinite;
+}
+.hero-logo-col img {
+  width: clamp(260px, 28vw, 400px);
+  height: auto;
+  filter: drop-shadow(0 8px 32px rgba(26,35,126,0.12));
+}
+@keyframes floatHero {
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-12px)}
+}
+.hero-content-col {
+  flex: 1; min-width: 0; max-width: 620px;
+  display: flex; flex-direction: column;
+  align-items: flex-start; text-align: left;
+  position: relative; z-index: 1;
+}
+@media(max-width:860px){
+  .hero{flex-direction:column;padding:90px 24px 56px;text-align:center;align-items:center}
+  .hero-content-col{align-items:center;text-align:center}
+  .hero-logo-col img{width:clamp(180px,55vw,280px)}
+  .hero-actions{justify-content:center}
+  .stats-row{justify-content:center}
 }
 .hero-bg {
   position: absolute; inset: 0; z-index: 0;
@@ -522,8 +541,7 @@ footer p { font-size: 12px; opacity: .5; line-height: 1.7; max-width: 560px; mar
 <!-- Nav -->
 <nav>
   <div class="nav-logo">
-    <div class="dot">📊</div>
-    ETF India
+    <img src="logo.png" alt="ETF India" style="height:44px;width:auto;display:block;">
   </div>
   <a href="explorer.html" class="nav-cta">
     Explore ETFs →
@@ -533,50 +551,58 @@ footer p { font-size: 12px; opacity: .5; line-height: 1.7; max-width: 560px; mar
 <!-- Hero -->
 <div class="hero">
   <div class="hero-bg"></div>
-  <span class="deco" style="top:15%;left:5%;animation-delay:.5s">🪔</span>
-  <span class="deco" style="top:20%;right:8%;animation-delay:1.2s;font-size:20px">✦</span>
-  <span class="deco" style="top:70%;left:3%;animation-delay:.9s;font-size:18px">🪔</span>
-  <span class="deco" style="top:65%;right:4%;animation-delay:1.6s">✦</span>
+  <span class="deco" style="top:15%;left:2%;animation-delay:.5s">🪔</span>
+  <span class="deco" style="top:20%;right:3%;animation-delay:1.2s;font-size:20px">✦</span>
+  <span class="deco" style="top:70%;left:2%;animation-delay:.9s;font-size:18px">🪔</span>
+  <span class="deco" style="top:65%;right:3%;animation-delay:1.6s">✦</span>
 
-  <div class="hero-badge anim-fade-up">
-    <div class="badge-dot">₹</div>
-    Simplified Investing for India
+  <!-- Logo image — left column -->
+  <div class="hero-logo-col anim-fade-up">
+    <img src="logo.png" alt="ETF India — India map logo"/>
   </div>
 
-  <h1 class="anim-fade-up delay-1">
-    Smart Investing<br>Shouldn't Be <em>Complicated</em>
-  </h1>
-
-  <p class="hero-sub anim-fade-up delay-2">
-    ETFs are the simplest, cheapest way to grow your wealth in the Indian market. One click buys you a slice of the entire market — no expertise needed.
-  </p>
-
-  <div class="hero-actions anim-fade-up delay-3">
-    <a href="explorer.html" class="btn-filled">
-      Explore All ETFs
-      <span class="arrow">→</span>
-    </a>
-    <a href="#benefits" class="btn-tonal">
-      Why ETFs? ↓
-    </a>
-  </div>
-
-  <div class="stats-row anim-fade-up delay-4">
-    <div class="stat-chip">
-      <div class="num">280+</div>
-      <div class="lbl">ETFs Listed</div>
+  <!-- Text content — right column -->
+  <div class="hero-content-col">
+    <div class="hero-badge anim-fade-up delay-1">
+      <div class="badge-dot">₹</div>
+      Simplified Investing for India
     </div>
-    <div class="stat-chip">
-      <div class="num">15</div>
-      <div class="lbl">Categories</div>
+
+    <h1 class="anim-fade-up delay-2">
+      Smart Investing<br>Shouldn't Be <em>Complicated</em>
+    </h1>
+
+    <p class="hero-sub anim-fade-up delay-3" style="margin-left:0;margin-right:0;">
+      ETFs are the simplest, cheapest way to grow your wealth in the Indian market. One click buys you a slice of the entire market — no expertise needed.
+    </p>
+
+    <div class="hero-actions anim-fade-up delay-4">
+      <a href="explorer.html" class="btn-filled">
+        Explore All ETFs
+        <span class="arrow">→</span>
+      </a>
+      <a href="#benefits" class="btn-tonal">
+        Why ETFs? ↓
+      </a>
     </div>
-    <div class="stat-chip">
-      <div class="num">0.05%</div>
-      <div class="lbl">Avg. Expense Ratio</div>
-    </div>
-    <div class="stat-chip">
-      <div class="num">₹1</div>
-      <div class="lbl">Min. to Start</div>
+
+    <div class="stats-row anim-fade-up delay-5">
+      <div class="stat-chip">
+        <div class="num">280+</div>
+        <div class="lbl">ETFs Listed</div>
+      </div>
+      <div class="stat-chip">
+        <div class="num">15</div>
+        <div class="lbl">Categories</div>
+      </div>
+      <div class="stat-chip">
+        <div class="num">0.05%</div>
+        <div class="lbl">Avg. Expense Ratio</div>
+      </div>
+      <div class="stat-chip">
+        <div class="num">₹1</div>
+        <div class="lbl">Min. to Start</div>
+      </div>
     </div>
   </div>
 </div>
