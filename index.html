@@ -151,6 +151,7 @@ nav {
   .hero-logo-col img{width:clamp(180px,55vw,280px)}
   .hero-actions{justify-content:center}
   .stats-row{justify-content:center}
+  .stat-chip{text-align:center;min-width:140px}
 }
 .hero-bg {
   position: absolute; inset: 0; z-index: 0;
@@ -238,26 +239,33 @@ h1 .accent {
 
 /* ── Stats row ──────────────────────────────────────────── */
 .stats-row {
-  display: flex; gap: 8px; flex-wrap: wrap;
-  justify-content: center;
+  display: flex; gap: 10px; flex-wrap: wrap;
+  justify-content: flex-start;
   position: relative; z-index: 1;
+  margin-top: 4px;
 }
 .stat-chip {
-  background: var(--md-surface-1);
+  background: #fff;
   border: 1px solid var(--md-outline-variant);
   border-radius: var(--radius-l);
-  padding: 12px 20px;
-  text-align: center;
+  padding: 14px 18px;
+  text-align: left; min-width: 160px; flex: 1;
+  box-shadow: 0 1px 4px var(--md-shadow);
 }
 .stat-chip .num {
   font-family: 'Fraunces', serif;
-  font-size: 24px; font-weight: 700;
+  font-size: 36px; font-weight: 900;
   color: var(--md-primary);
-  line-height: 1;
+  line-height: 1; margin-bottom: 4px;
 }
-.stat-chip .lbl {
+.stat-chip .lbl-main {
+  font-size: 13px; font-weight: 700;
+  color: var(--md-on-surface);
+  margin-bottom: 4px;
+}
+.stat-chip .lbl-sub {
   font-size: 11px; color: var(--md-on-surface-variant);
-  margin-top: 2px; font-weight: 500;
+  line-height: 1.5; font-weight: 400;
 }
 
 /* ── Section ─────────────────────────────────────────────── */
@@ -551,10 +559,6 @@ footer p { font-size: 12px; opacity: .5; line-height: 1.7; max-width: 560px; mar
 <!-- Hero -->
 <div class="hero">
   <div class="hero-bg"></div>
-  <span class="deco" style="top:15%;left:2%;animation-delay:.5s">🪔</span>
-  <span class="deco" style="top:20%;right:3%;animation-delay:1.2s;font-size:20px">✦</span>
-  <span class="deco" style="top:70%;left:2%;animation-delay:.9s;font-size:18px">🪔</span>
-  <span class="deco" style="top:65%;right:3%;animation-delay:1.6s">✦</span>
 
   <!-- Logo image — left column -->
   <div class="hero-logo-col anim-fade-up">
@@ -573,7 +577,7 @@ footer p { font-size: 12px; opacity: .5; line-height: 1.7; max-width: 560px; mar
     </h1>
 
     <p class="hero-sub anim-fade-up delay-3" style="margin-left:0;margin-right:0;">
-      ETFs are the simplest, cheapest way to grow your wealth in the Indian market. One click buys you a slice of the entire market — no expertise needed.
+      ETFs let you invest in dozens of top companies with a single click — at a fraction of what a mutual fund charges. No expertise, no jargon, no stress.
     </p>
 
     <div class="hero-actions anim-fade-up delay-4">
@@ -589,19 +593,23 @@ footer p { font-size: 12px; opacity: .5; line-height: 1.7; max-width: 560px; mar
     <div class="stats-row anim-fade-up delay-5">
       <div class="stat-chip">
         <div class="num">280+</div>
-        <div class="lbl">ETFs Listed</div>
+        <div class="lbl-main">Investment Options</div>
+        <div class="lbl-sub">Gold, Banks, Tech, Healthcare & more — all in one place</div>
       </div>
       <div class="stat-chip">
         <div class="num">15</div>
-        <div class="lbl">Categories</div>
+        <div class="lbl-main">Easy Categories</div>
+        <div class="lbl-sub">Sorted in plain language — no finance degree needed</div>
       </div>
       <div class="stat-chip">
-        <div class="num">0.05%</div>
-        <div class="lbl">Avg. Expense Ratio</div>
+        <div class="num">~0%</div>
+        <div class="lbl-main">Annual Fees</div>
+        <div class="lbl-sub">Pay almost nothing — mutual funds charge up to 20× more</div>
       </div>
       <div class="stat-chip">
         <div class="num">₹1</div>
-        <div class="lbl">Min. to Start</div>
+        <div class="lbl-main">To Get Started</div>
+        <div class="lbl-sub">No big savings needed — start with whatever you have today</div>
       </div>
     </div>
   </div>

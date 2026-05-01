@@ -227,31 +227,30 @@ function getCategory(e){
   return'Index';
 }
 
-// M3 tonal palette — light theme
+// M3 tonal palette — light theme, plain-English labels
 const CAT={
-  'All':          {color:'#5C4033',bg:'#F3E5D8',label:'All ETFs'},
-  'Gold':         {color:'#7B5800',bg:'#FFF0CC',label:'Gold ETFs'},
-  'Silver':       {color:'#424F5A',bg:'#E4EDF4',label:'Silver ETFs'},
-  'Index':        {color:'#4A1680',bg:'#EDE0FF',label:'Market Index ETFs'},
-  'Banking':      {color:'#005140',bg:'#C8F5E8',label:'Banking Sector ETFs'},
-  'IT':           {color:'#00376C',bg:'#D1E4FF',label:'Technology / IT ETFs'},
-  'Healthcare':   {color:'#7D0028',bg:'#FFD9E2',label:'Healthcare & Pharma ETFs'},
-  'Defence':      {color:'#6A3A00',bg:'#FFE1BB',label:'Defence Sector ETFs'},
-  'Liquid/Debt':  {color:'#004770',bg:'#CCE5FF',label:'Safe / Liquid ETFs'},
-  'International':{color:'#3B008B',bg:'#E8DEFF',label:'International ETFs'},
-  'Midcap':       {color:'#8B3A00',bg:'#FFE2CC',label:'Mid Cap ETFs'},
-  'Smallcap':     {color:'#8B0000',bg:'#FFD8D8',label:'Small Cap ETFs'},
-  'PSU/Govt':     {color:'#0A3D0C',bg:'#C8F5CB',label:'PSU / Govt ETFs'},
-  'FMCG':         {color:'#1B5E20',bg:'#D3FFDB',label:'FMCG / Consumer ETFs'},
-  'Sectoral':     {color:'#6A2300',bg:'#FFE5D3',label:'Sector ETFs'},
+  'All':          {color:'#5C4033',bg:'#F3E5D8', chip:'🗂 All ETFs',         label:'Browse every ETF available on NSE India'},
+  'Gold':         {color:'#7B5800',bg:'#FFF0CC', chip:'🥇 Gold',             label:'Invest in Gold without buying physical gold'},
+  'Silver':       {color:'#424F5A',bg:'#E4EDF4', chip:'🥈 Silver',           label:'Invest in Silver without buying physical silver'},
+  'Index':        {color:'#4A1680',bg:'#EDE0FF', chip:'📈 Whole Market',     label:'Tracks Nifty 50 / Sensex — India\'s top companies in one shot'},
+  'Banking':      {color:'#005140',bg:'#C8F5E8', chip:'🏦 Banks',            label:'Top Indian banks like SBI, HDFC, ICICI bundled together'},
+  'IT':           {color:'#00376C',bg:'#D1E4FF', chip:'💻 Tech Companies',   label:'India\'s top software & IT companies like Infosys, TCS, Wipro'},
+  'Healthcare':   {color:'#7D0028',bg:'#FFD9E2', chip:'💊 Hospitals & Pharma',label:'Medicine, hospitals & pharma companies like Sun Pharma, Apollo'},
+  'Defence':      {color:'#6A3A00',bg:'#FFE1BB', chip:'🛡 Defence',          label:'Companies that make defence equipment for India'},
+  'Liquid/Debt':  {color:'#004770',bg:'#CCE5FF', chip:'🏦 Safe Parking',     label:'Like a savings account — park money safely with small returns'},
+  'International':{color:'#3B008B',bg:'#E8DEFF', chip:'🌍 Global Markets',   label:'Invest in US, China, Europe — beyond Indian stocks'},
+  'Midcap':       {color:'#8B3A00',bg:'#FFE2CC', chip:'🏢 Medium Companies', label:'Mid-size growing companies — higher growth, slightly more risk'},
+  'Smallcap':     {color:'#8B0000',bg:'#FFD8D8', chip:'🏪 Small Companies',  label:'Small but growing companies — high growth potential, higher risk'},
+  'PSU/Govt':     {color:'#0A3D0C',bg:'#C8F5CB', chip:'🏛 Govt Companies',  label:'Government-owned companies like ONGC, Coal India, BHEL'},
+  'FMCG':         {color:'#1B5E20',bg:'#D3FFDB', chip:'🛒 Everyday Brands', label:'Companies making daily-use products — HUL, Nestle, Dabur'},
+  'Sectoral':     {color:'#6A2300',bg:'#FFE5D3', chip:'⚙️ Other Sectors',    label:'Auto, Energy, Metals, Real Estate & more sector-specific ETFs'},
 };
 const cs=c=>CAT[c]||CAT['All'];
 const CATS=['All','Gold','Silver','Index','Banking','IT','Healthcare','Defence','Liquid/Debt','International','Midcap','Smallcap','PSU/Govt','FMCG','Sectoral'];
-const PERF=['All','▲ Gainers','▼ Losers','Near 52W High','Best 30D'];
-const SORTS=[['value','Top Value (₹)'],['volume','Most Traded'],['pct','Today\'s Movers'],['r1y','Best 1-Year'],['r30d','Best 30-Day']];
+const SORTS=[['value','Most Popular'],['volume','Most Traded Today'],['pct','Up / Down Today'],['r1y','Best Last 1 Year'],['r30d','Best Last 30 Days']];
 
 // ─── State ────────────────────────────────────────────────
-let S={etfs:[],dataDate:null,fileName:'etf.csv',loading:true,fetchError:null,category:'All',perf:'All',sort:'value',selected:null,aiCache:{},aiLoading:false};
+let S={etfs:[],dataDate:null,fileName:'etf.csv',loading:true,fetchError:null,category:'All',sort:'value',selected:null,aiCache:{},aiLoading:false};
 function ss(p){Object.assign(S,p);render();}
 function gc(n){return n===null?'var(--md-outline)':n>=0?'#2E7D32':'#B71C1C';}
 
@@ -260,11 +259,6 @@ function filtered(){
   let list=S.etfs.filter(e=>{
     const cat=getCategory(e);
     if(S.category!=='All'&&cat!==S.category)return false;
-    const pct=pn(e['%CHNG']);
-    if(S.perf==='▲ Gainers'&&(pct===null||pct<=0))return false;
-    if(S.perf==='▼ Losers'&&(pct===null||pct>=0))return false;
-    if(S.perf==='Near 52W High'){const ltp=pn(e['LTP']),h=pn(e['52W H']);if(!ltp||!h||ltp<h*0.95)return false;}
-    if(S.perf==='Best 30D'){const d=pn(e['30D %CHNG'])??pn(e['30D  %CHNG']);if(d===null||d<=5)return false;}
     return true;
   });
   list.sort((a,b)=>{
@@ -287,7 +281,7 @@ async function fetchAI(etf){
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
       model:'claude-sonnet-4-20250514',max_tokens:900,
-      messages:[{role:'user',content:`You are an Indian financial markets expert helping retail investors understand ETFs listed on NSE India.\n\nETF Symbol: ${sym}\nTracks: ${etf['UNDERLYING ASSET']}\nCategory: ${cat}\nCurrent Price: ₹${etf['LTP']}\nToday's Change: ${etf['%CHNG']}%\n30-Day Return: ${etf['30D  %CHNG']||etf['30D %CHNG']||'-'}%\n1-Year Return: ${etf['365 D   %CHNG']||etf['365 D %CHNG']||'-'}%\n52W High: ₹${etf['52W H']}\n52W Low: ₹${etf['52W L']}\nTraded Value: ₹${etf['VALUE (₹ Crores)']} Crores\n\nReturn ONLY valid JSON:\n{"what":"2-3 plain sentences","suitable_for":"1-2 sentences","pros":["p1","p2","p3"],"cons":["c1","c2","c3"],"risk_level":"Low","investment_horizon":"Long-term (3+ years)"}`}]
+      messages:[{role:'user',content:`You are explaining ETFs to a first-time Indian investor who has zero knowledge of stock markets or finance. Use very simple everyday language — like explaining to a friend over tea. Avoid all jargon.\n\nETF Symbol: ${sym}\nTracks: ${etf['UNDERLYING ASSET']}\nCategory: ${cat}\nCurrent Price: ₹${etf['LTP']}\nToday's Change: ${etf['%CHNG']}%\n30-Day Return: ${etf['30D  %CHNG']||etf['30D %CHNG']||'-'}%\n1-Year Return: ${etf['365 D   %CHNG']||etf['365 D %CHNG']||'-'}%\n52W High: ₹${etf['52W H']}\n52W Low: ₹${etf['52W L']}\nTraded Value: ₹${etf['VALUE (₹ Crores)']} Crores\n\nReturn ONLY valid JSON (no markdown):\n{"what":"2-3 sentences in plain Hindi-English mix or simple English: what does this ETF actually invest in, explained like explaining to a beginner","suitable_for":"1-2 sentences: who is this best for — salaried person, retired person, someone saving for 5 years etc","pros":["simple benefit 1","simple benefit 2","simple benefit 3"],"cons":["simple risk 1 in plain words","simple risk 2 in plain words","simple risk 3 in plain words"],"risk_level":"Low","investment_horizon":"Long-term (5+ years)"}`}]
     })});
     const data=await res.json();
     const txt=data.content?.[0]?.text||'{}';
@@ -300,7 +294,7 @@ async function fetchAI(etf){
 function loadFromText(text,name){
   const rows=parseCSV(text);
   const date=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
-  ss({etfs:rows,dataDate:date,fileName:name||'etf.csv',loading:false,fetchError:null,selected:null,category:'All',perf:'All',aiCache:{}});
+  ss({etfs:rows,dataDate:date,fileName:name||'etf.csv',loading:false,fetchError:null,selected:null,category:'All',aiCache:{}});
 }
 function loadFile(file){const r=new FileReader();r.onload=e=>loadFromText(e.target.result,file.name);r.readAsText(file);}
 async function autoLoad(){
@@ -411,7 +405,8 @@ function buildExplorer(){
   const left=el('div','explorer-left');
   left.appendChild(buildFilters());
   const list=filtered();
-  const rc=el('div','result-count');rc.textContent=list.length===0?'No ETFs match your filters':`Showing ${list.length} ETF${list.length!==1?'s':''}`;
+  const rc=el('div','result-count');
+  rc.textContent=list.length===0?'No ETFs found for this category':`Showing ${list.length} ETF${list.length!==1?'s':''} — click any card to learn more`;
   left.appendChild(rc);
   left.appendChild(buildGrid(list));
   wrap.appendChild(left);
@@ -422,37 +417,49 @@ function buildExplorer(){
 // ─── Filters ─────────────────────────────────────────────
 function buildFilters(){
   const wrap=el('div','',null,{marginBottom:'16px'});
-  const cl=el('div','filter-lbl','Filter by Category');wrap.appendChild(cl);
+
+  // Category chips label
+  const cl=el('div','filter-lbl','What are you interested in?');wrap.appendChild(cl);
+
+  // Category description hint — updates when a category is active
+  const hintBar=el('div','',null,{
+    fontSize:'12px',color:'var(--md-on-surface-variant)',background:'var(--md-surface-1)',
+    border:'1px solid var(--md-outline-variant)',borderRadius:'var(--radius-m)',
+    padding:'8px 14px',marginBottom:'10px',lineHeight:'1.5',
+    display: S.category==='All'?'none':'block'
+  });
+  hintBar.id='cat-hint';
+  if(S.category!=='All') hintBar.textContent='ℹ️  '+cs(S.category).label;
+  wrap.appendChild(hintBar);
+
   const chipRow=el('div','chip-row');
   CATS.filter(c=>c==='All'||S.etfs.some(e=>getCategory(e)===c)).forEach(c=>{
     const st=cs(c);const active=S.category===c;
     const count=c==='All'?S.etfs.length:S.etfs.filter(e=>getCategory(e)===c).length;
     const chip=el('button','m3-chip');
     chip.title=st.label;
-    sty(chip,{background:active?st.color:st.bg,borderColor:active?st.color:'transparent',color:active?'#fff':st.color});
-    chip.appendChild(document.createTextNode(c));
-    if(c!=='All'){const cnt=el('span','chip-count',String(count));chip.appendChild(cnt);}
+    sty(chip,{background:active?st.color:st.bg,borderColor:active?st.color:'transparent',color:active?'#fff':st.color,fontWeight:active?'700':'600'});
+    chip.appendChild(document.createTextNode(st.chip));
+    if(c!=='All'){
+      const cnt=el('span','chip-count',' '+String(count));chip.appendChild(cnt);
+    }
     on(chip,'click',()=>ss({category:c,selected:null}));
     chipRow.appendChild(chip);
   });
   wrap.appendChild(chipRow);
 
-  const row2=el('div','filter-row2');
-
-  const showG=el('div','filter-group');
-  const showLbl=document.createElement('label');showLbl.textContent='Show';showG.appendChild(showLbl);
-  const showP=el('div','pill-row');
-  PERF.forEach(p=>{const b=el('button','m3-pill'+(S.perf===p?' active':''),p);on(b,'click',()=>ss({perf:p}));showP.appendChild(b);});
-  showG.appendChild(showP);
-
-  const sortG=el('div','filter-group');
-  const sortLbl=document.createElement('label');sortLbl.textContent='Sort by';sortG.appendChild(sortLbl);
+  // Sort only (no Show/perf)
+  const sortG=el('div','filter-group',null,{marginTop:'10px'});
+  const sortLbl=document.createElement('label');
+  sortLbl.textContent='Sort by';sortG.appendChild(sortLbl);
   const sortP=el('div','pill-row');
-  SORTS.forEach(([k,lbl])=>{const b=el('button','m3-pill'+(S.sort===k?' active':''),lbl);on(b,'click',()=>ss({sort:k}));sortP.appendChild(b);});
+  SORTS.forEach(([k,lbl])=>{
+    const b=el('button','m3-pill'+(S.sort===k?' active':''),lbl);
+    on(b,'click',()=>ss({sort:k}));
+    sortP.appendChild(b);
+  });
   sortG.appendChild(sortP);
-
-  row2.appendChild(showG);row2.appendChild(sortG);
-  wrap.appendChild(row2);
+  wrap.appendChild(sortG);
   return wrap;
 }
 
@@ -486,7 +493,7 @@ function buildCard(etf){
   const topL=el('div','',null,{flex:'1',minWidth:'0'});
   topL.appendChild(el('div','ec-sym',sym));
   const asset=el('div','ec-asset');asset.textContent=etf['UNDERLYING ASSET']||'';topL.appendChild(asset);
-  const badge=el('span','ec-badge',cat);sty(badge,{background:st.bg,color:st.color});
+  const badge=el('span','ec-badge',st.chip);sty(badge,{background:st.bg,color:st.color});
   top.appendChild(topL);top.appendChild(badge);card.appendChild(top);
 
   // Price
@@ -511,7 +518,7 @@ function buildCard(etf){
 
   // Stats
   const stats=el('div','ec-stats');
-  [['30D',d30,true],['1Y',d365,true],['₹Cr',etf['VALUE (₹ Crores)'],false]].forEach(([lbl,val,isPct])=>{
+  [['30 Days',d30,true],['1 Year',d365,true],['₹ Traded',etf['VALUE (₹ Crores)'],false]].forEach(([lbl,val,isPct])=>{
     const c=el('div','ec-stat');
     const l=el('div','ec-stat-lbl',lbl);
     const v=el('div','ec-stat-val');
@@ -539,7 +546,7 @@ function buildDetailPanel(etf){
   hl.appendChild(el('div','dp-sym',sym));
   const das=el('div','dp-asset');das.textContent=etf['UNDERLYING ASSET']||'';hl.appendChild(das);
   const catRow=el('div','dp-cat-row');
-  const cb=el('span','ec-badge',cat);sty(cb,{background:st.bg,color:st.color,padding:'4px 12px',fontSize:'10px'});
+  const cb=el('span','ec-badge',st.chip);sty(cb,{background:st.bg,color:st.color,padding:'4px 12px',fontSize:'10px'});
   const cbLbl=el('span','',null,{fontSize:'10px',color:'var(--md-outline)'});cbLbl.textContent=st.label;
   catRow.appendChild(cb);catRow.appendChild(cbLbl);hl.appendChild(catRow);
   const closeBtn=el('button','dp-close','×');on(closeBtn,'click',()=>ss({selected:null}));
@@ -549,28 +556,30 @@ function buildDetailPanel(etf){
   const pc=el('div','dp-price-card');
   const pm=el('div','dp-price-main');
   pm.appendChild(el('div','dp-price-big',fmtPrice(ltp)));
-  const pb=el('div','dp-pct-big');sty(pb,{color:gc(pct)});pb.textContent=pct!==null?fmtPct(pct)+'  today':'—';
+  const pb=el('div','dp-pct-big');sty(pb,{color:gc(pct)});
+  pb.textContent=pct!==null?(pct>=0?'▲ Up ':' ▼ Down ')+Math.abs(pct).toFixed(2)+'% today':'—';
   pm.appendChild(pb);pc.appendChild(pm);
-  const prev=el('div','dp-prev');prev.textContent=`Prev Close: ₹${etf['PREV. CLOSE']||'—'}  ·  NAV: ₹${etf['NAV']||'—'}`;
+  const prev=el('div','dp-prev');prev.textContent=`Yesterday's close: ₹${etf['PREV. CLOSE']||'—'}  ·  NAV (fund value): ₹${etf['NAV']||'—'}`;
   pc.appendChild(prev);
 
   if(h52&&l52&&ltp){
     const pos=Math.max(0,Math.min(100,((ltp-l52)/(h52-l52))*100));
     const rl=el('div','dp-range-lbls');
-    rl.appendChild(el('span','','52W Low: ₹'+l52.toFixed(2)));rl.appendChild(el('span','','52W High: ₹'+h52.toFixed(2)));pc.appendChild(rl);
+    rl.appendChild(el('span','','Lowest in 1 year: ₹'+l52.toFixed(2)));
+    rl.appendChild(el('span','','Highest in 1 year: ₹'+h52.toFixed(2)));pc.appendChild(rl);
     const track=el('div','dp-range-track');
     const grad=el('div','dp-range-grad');sty(grad,{width:pos+'%'});
     const dot=el('div','dp-range-dot');sty(dot,{left:pos+'%'});
     track.appendChild(grad);track.appendChild(dot);pc.appendChild(track);
-    const note=el('div','dp-range-note');note.textContent=`At ${pos.toFixed(0)}% of its 52-week range`;pc.appendChild(note);
+    const note=el('div','dp-range-note');note.textContent=`Price is at ${pos.toFixed(0)}% of its highest point in the last year`;pc.appendChild(note);
   }
   panel.appendChild(pc);
 
   // Stats
   const sg=el('div','dp-stats');
-  [['30-Day Return',d30,true],['1-Year Return',d365,true],
-   ['Volume Traded',fmtVol(etf['VOLUME']),false],
-   ['Value (₹ Crores)',etf['VALUE (₹ Crores)']&&etf['VALUE (₹ Crores)']!=='-'?'₹'+etf['VALUE (₹ Crores)']:'—',false]
+  [['Return in 30 Days',d30,true],['Return in 1 Year',d365,true],
+   ['How much is traded daily',fmtVol(etf['VOLUME']),false],
+   ['Total money invested today',etf['VALUE (₹ Crores)']&&etf['VALUE (₹ Crores)']!=='-'?'₹'+etf['VALUE (₹ Crores)']+' Cr':'—',false]
   ].forEach(([lbl,val,isPct])=>{
     const c=el('div','dp-stat');
     const l=el('div','dp-stat-lbl',lbl);
@@ -605,7 +614,7 @@ function buildDetailPanel(etf){
       panel.appendChild(br);
 
       // What + Suited
-      [['What is this ETF?',ai.what],['Best suited for',ai.suitable_for]].forEach(([title,body])=>{
+      [['What does this ETF do?',ai.what],['Who should invest in this?',ai.suitable_for]].forEach(([title,body])=>{
         if(!body)return;
         const sec=el('div','dp-ai-sec');
         sec.appendChild(el('div','dp-ai-sec-title',title));
@@ -616,7 +625,7 @@ function buildDetailPanel(etf){
       // Pros
       if(ai.pros?.length){
         const ps=el('div','',null,{marginBottom:'14px'});
-        const t=el('div','dp-list-title');sty(t,{color:'#2E7D32'});t.textContent='✓ Pros';ps.appendChild(t);
+        const t=el('div','dp-list-title');sty(t,{color:'#2E7D32'});t.textContent='✓ Why this could be good for you';ps.appendChild(t);
         ai.pros.forEach(p=>{
           const row=el('div','dp-list-item');
           const d=el('div','dp-dot');sty(d,{background:'#2E7D32'});
@@ -626,7 +635,7 @@ function buildDetailPanel(etf){
       // Cons
       if(ai.cons?.length){
         const cs2=el('div','',null,{marginBottom:'16px'});
-        const t=el('div','dp-list-title');sty(t,{color:'#B71C1C'});t.textContent='✗ Risks & Cons';cs2.appendChild(t);
+        const t=el('div','dp-list-title');sty(t,{color:'#B71C1C'});t.textContent='⚠ Things to be careful about';cs2.appendChild(t);
         ai.cons.forEach(c=>{
           const row=el('div','dp-list-item');
           const d=el('div','dp-dot');sty(d,{background:'#B71C1C'});
