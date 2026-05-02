@@ -185,103 +185,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--md-surface);col
 @media(max-width:760px){
   .etf-grid{grid-template-columns:1fr 1fr}
   .detail-panel{position:fixed;bottom:0;left:0;right:0;width:100%!important;height:72vh;border-radius:24px 24px 0 0;z-index:200;overflow:auto;box-shadow:0 -8px 32px var(--md-shadow)}
-  .portfolio-panel{display:none}
 }
 @media(max-width:460px){.etf-grid{grid-template-columns:1fr}}
-
-/* ── Portfolio Panel ────────────────────────────────────── */
-.portfolio-panel{
-  width:320px;flex-shrink:0;
-  border-left:1px solid var(--md-outline-variant);
-  background:var(--md-surface-1);
-  overflow:auto;padding:20px 18px 40px;
-  display:flex;flex-direction:column;gap:0;
-}
-.pp-header{
-  display:flex;align-items:center;gap:10px;
-  margin-bottom:18px;padding-bottom:14px;
-  border-bottom:1px solid var(--md-outline-variant);
-}
-.pp-icon{
-  width:36px;height:36px;border-radius:var(--radius-m);
-  background:var(--md-primary-container);
-  display:flex;align-items:center;justify-content:center;font-size:18px;
-  flex-shrink:0;
-}
-.pp-title{font-family:'Fraunces',serif;font-size:17px;font-weight:800;color:var(--md-on-surface)}
-.pp-sub{font-size:11px;color:var(--md-outline);margin-top:1px}
-
-/* Inputs */
-.pp-field{margin-bottom:14px}
-.pp-label{font-size:11px;font-weight:700;color:var(--md-on-surface-variant);margin-bottom:5px;letter-spacing:.3px;display:block}
-.pp-label span{font-weight:400;color:var(--md-outline);font-size:10px}
-.pp-input{
-  width:100%;background:#fff;
-  border:1.5px solid var(--md-outline-variant);
-  border-radius:var(--radius-m);padding:10px 14px;
-  font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;
-  color:var(--md-on-surface);outline:none;
-  transition:border-color .15s;
-}
-.pp-input:focus{border-color:var(--md-primary)}
-.pp-input::placeholder{font-weight:400;color:var(--md-outline);font-size:13px}
-.pp-rupee-wrap{position:relative}
-.pp-rupee-wrap .pp-input{padding-left:28px}
-.pp-rupee-sym{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--md-outline);font-weight:600}
-
-/* Duration pills */
-.dur-pills{display:flex;gap:6px;flex-wrap:wrap}
-.dur-pill{
-  padding:6px 12px;border-radius:var(--radius-full);
-  border:1.5px solid var(--md-outline-variant);background:#fff;
-  font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;
-  color:var(--md-on-surface-variant);cursor:pointer;transition:all .15s;
-}
-.dur-pill.active{background:var(--md-primary);color:#fff;border-color:var(--md-primary)}
-.dur-pill:hover:not(.active){background:var(--md-surface-variant)}
-
-/* Calculate button */
-.pp-calc-btn{
-  width:100%;background:var(--md-primary);color:#fff;
-  border:none;border-radius:var(--radius-l);padding:13px;
-  font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;
-  cursor:pointer;margin-top:6px;margin-bottom:16px;
-  transition:all .2s ease;
-}
-.pp-calc-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
-
-/* Results */
-.pp-result-box{
-  background:#fff;border:1px solid var(--md-outline-variant);
-  border-radius:var(--radius-xl);padding:16px;margin-bottom:14px;
-}
-.pp-result-title{font-size:10px;font-weight:800;color:var(--md-outline);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.pp-goal-row{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px}
-.pp-goal-num{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:var(--md-primary)}
-.pp-goal-lbl{font-size:10px;color:var(--md-outline);text-align:right;line-height:1.4}
-.pp-progress-track{height:8px;background:var(--md-surface-variant);border-radius:4px;overflow:hidden;margin-bottom:6px}
-.pp-progress-fill{height:100%;border-radius:4px;background:linear-gradient(to right,var(--md-primary),#FF8F00);transition:width .6s ease}
-.pp-progress-note{font-size:10px;color:var(--md-outline)}
-
-/* ETF suggestion cards */
-.pp-etf-title{font-size:10px;font-weight:800;color:var(--md-outline);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.pp-etf-card{
-  background:#fff;border:1px solid var(--md-outline-variant);
-  border-radius:var(--radius-l);padding:12px 14px;margin-bottom:8px;
-  cursor:pointer;transition:all .18s ease;
-}
-.pp-etf-card:hover{border-color:var(--md-primary);transform:translateY(-1px);box-shadow:0 4px 12px var(--md-shadow)}
-.pp-etf-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.pp-etf-sym{font-family:'Fraunces',serif;font-size:14px;font-weight:800}
-.pp-etf-ret{font-size:12px;font-weight:700;color:#2E7D32}
-.pp-etf-asset{font-size:10px;color:var(--md-outline);margin-bottom:6px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pp-etf-proj{font-size:11px;color:var(--md-on-surface-variant);background:var(--md-surface-1);border-radius:var(--radius-s);padding:4px 8px;display:inline-block}
-.pp-etf-proj strong{color:var(--md-primary)}
-.pp-rank{width:20px;height:20px;border-radius:50%;background:var(--md-primary-container);color:var(--md-on-primary-container);font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;margin-right:6px;flex-shrink:0}
-.pp-empty{text-align:center;padding:24px 12px;color:var(--md-outline)}
-.pp-empty-icon{font-size:32px;margin-bottom:8px}
-.pp-empty-txt{font-size:13px;line-height:1.6}
-.pp-disclaimer{font-size:10px;color:var(--md-outline);line-height:1.6;padding:10px 12px;background:var(--md-surface-variant);border-radius:var(--radius-m);margin-top:8px}
 </style>
 </head>
 <body>
@@ -345,12 +250,7 @@ const CATS=['All','Gold','Silver','Index','Banking','IT','Healthcare','Defence',
 const SORTS=[['value','Most Popular'],['volume','Most Traded Today'],['pct','Up / Down Today'],['r1y','Best Last 1 Year'],['r30d','Best Last 30 Days']];
 
 // ─── State ────────────────────────────────────────────────
-let S={
-  etfs:[],dataDate:null,fileName:'etf.csv',loading:true,fetchError:null,
-  category:'All',sort:'value',selected:null,aiCache:{},aiLoading:false,
-  // Portfolio planner
-  pTarget:'',pMonthly:'',pYears:5,pResult:null
-};
+let S={etfs:[],dataDate:null,fileName:'etf.csv',loading:true,fetchError:null,category:'All',sort:'value',selected:null,aiCache:{},aiLoading:false};
 function ss(p){Object.assign(S,p);render();}
 function gc(n){return n===null?'var(--md-outline)':n>=0?'#2E7D32':'#B71C1C';}
 
@@ -372,176 +272,7 @@ function filtered(){
   return list;
 }
 
-// ─── Portfolio Calculator ─────────────────────────────────
-function calcPortfolio(){
-  const target=parseFloat(S.pTarget.replace(/,/g,''));
-  const monthly=parseFloat(S.pMonthly.replace(/,/g,''));
-  const years=S.pYears;
-  if(!target||!monthly||!years||target<=0||monthly<=0)return;
-
-  const n=years*12;
-
-  // Get ETFs with valid 1-year return, sorted best first
-  const candidates=S.etfs
-    .map(e=>{
-      const r1y=pn(e['365 D   %CHNG'])??pn(e['365 D %CHNG']);
-      return{e,r1y};
-    })
-    .filter(x=>x.r1y!==null&&x.r1y>0)
-    .sort((a,b)=>b.r1y-a.r1y);
-
-  // Top 5 unique (by underlying asset category diversity)
-  const seen=new Set();const top=[];
-  for(const x of candidates){
-    const cat=getCategory(x.e);
-    if(!seen.has(cat)){seen.add(cat);top.push(x);}
-    if(top.length>=5)break;
-  }
-  // If less than 5 fill from remaining
-  if(top.length<5){
-    for(const x of candidates){
-      if(!top.includes(x))top.push(x);
-      if(top.length>=5)break;
-    }
-  }
-
-  // For each suggested ETF, project SIP future value
-  const suggestions=top.map(({e,r1y})=>{
-    const r=r1y/100/12; // monthly rate
-    let fv;
-    if(r===0) fv=monthly*n;
-    else fv=monthly*(Math.pow(1+r,n)-1)/r*(1+r);
-    const pct=Math.min(100,(fv/target)*100);
-    return{e,r1y,fv,pct};
-  });
-
-  // Required monthly SIP to hit target using best ETF return
-  const bestR=top[0]?.r1y/100/12||0;
-  let requiredSIP=0;
-  if(bestR>0) requiredSIP=target*(bestR)/(Math.pow(1+bestR,n)-1)/(1+bestR);
-  else requiredSIP=target/n;
-
-  ss({pResult:{target,monthly,years,suggestions,requiredSIP}});
-}
-
-// ─── Portfolio Panel ──────────────────────────────────────
-function buildPortfolioPanel(){
-  const panel=el('div','portfolio-panel');
-
-  // Header
-  const hd=el('div','pp-header');
-  hd.appendChild(el('div','pp-icon','🎯'));
-  const ht=el('div','');
-  ht.appendChild(el('div','pp-title','My Portfolio'));
-  ht.appendChild(el('div','pp-sub','Set your goal. We pick the ETFs.'));
-  hd.appendChild(ht);panel.appendChild(hd);
-
-  // Input: Monthly SIP
-  const f1=el('div','pp-field');
-  const l1=document.createElement('label');l1.className='pp-label';
-  l1.innerHTML='How much can you invest monthly? <span>(SIP amount)</span>';
-  f1.appendChild(l1);
-  const rw1=el('div','pp-rupee-wrap');
-  rw1.appendChild(el('span','pp-rupee-sym','₹'));
-  const inp1=el('input','pp-input',null,null);
-  inp1.type='text';inp1.placeholder='e.g. 5,000';inp1.value=S.pMonthly;
-  on(inp1,'input',ev=>Object.assign(S,{pMonthly:ev.target.value}));
-  rw1.appendChild(inp1);f1.appendChild(rw1);panel.appendChild(f1);
-
-  // Input: Target amount
-  const f2=el('div','pp-field');
-  const l2=document.createElement('label');l2.className='pp-label';
-  l2.innerHTML='What amount do you want to reach? <span>(your goal)</span>';
-  f2.appendChild(l2);
-  const rw2=el('div','pp-rupee-wrap');
-  rw2.appendChild(el('span','pp-rupee-sym','₹'));
-  const inp2=el('input','pp-input',null,null);
-  inp2.type='text';inp2.placeholder='e.g. 10,00,000';inp2.value=S.pTarget;
-  on(inp2,'input',ev=>Object.assign(S,{pTarget:ev.target.value}));
-  rw2.appendChild(inp2);f2.appendChild(rw2);panel.appendChild(f2);
-
-  // Duration pills
-  const f3=el('div','pp-field');
-  const l3=document.createElement('label');l3.className='pp-label';
-  l3.innerHTML='In how many years? <span>(investment duration)</span>';
-  f3.appendChild(l3);
-  const pills=el('div','dur-pills');
-  [[1,'1 yr'],[3,'3 yrs'],[5,'5 yrs'],[7,'7 yrs'],[10,'10 yrs'],[15,'15 yrs'],[20,'20 yrs']].forEach(([y,lbl])=>{
-    const p=el('button','dur-pill'+(S.pYears===y?' active':''),lbl);
-    on(p,'click',()=>{Object.assign(S,{pYears:y,pResult:null});render();});
-    pills.appendChild(p);
-  });
-  f3.appendChild(pills);panel.appendChild(f3);
-
-  // Calculate button
-  const btn=el('button','pp-calc-btn','🔍  Find Matching ETFs');
-  on(btn,'click',calcPortfolio);
-  panel.appendChild(btn);
-
-  // Results
-  const res=S.pResult;
-  if(!res){
-    const emp=el('div','pp-empty');
-    emp.appendChild(el('div','pp-empty-icon','📊'));
-    const et=el('div','pp-empty-txt');
-    et.innerHTML='Enter your monthly savings, goal amount, and years — we\'ll show you <strong>which ETFs can get you there</strong> based on their past 1-year returns.';
-    emp.appendChild(et);panel.appendChild(emp);
-  }else{
-    // Goal summary card
-    const rb=el('div','pp-result-box');
-    rb.appendChild(el('div','pp-result-title','Your Goal Summary'));
-    const gr=el('div','pp-goal-row');
-    const gn=el('div','pp-goal-num');gn.textContent='₹'+res.target.toLocaleString('en-IN');
-    const gl=el('div','pp-goal-lbl');gl.innerHTML=`Target in<br><strong>${res.years} year${res.years!==1?'s':''}</strong>`;
-    gr.appendChild(gn);gr.appendChild(gl);rb.appendChild(gr);
-
-    // Best ETF projected value
-    const best=res.suggestions[0];
-    if(best){
-      const pct=Math.min(100,(best.fv/res.target)*100);
-      const track=el('div','pp-progress-track');
-      const fill=el('div','pp-progress-fill');fill.style.width=pct+'%';
-      fill.style.background=pct>=100?'#2E7D32':pct>=70?'#F57C00':'#E65100';
-      track.appendChild(fill);rb.appendChild(track);
-      const note=el('div','pp-progress-note');
-      if(pct>=100){
-        note.innerHTML=`✅ Your ₹${res.monthly.toLocaleString('en-IN')}/mo SIP can reach your goal with the right ETF`;
-      }else{
-        const reqFmt=Math.round(res.requiredSIP).toLocaleString('en-IN');
-        note.innerHTML=`💡 To reach your goal, you may need ~<strong>₹${reqFmt}/month</strong>`;
-      }
-      rb.appendChild(note);
-    }
-    panel.appendChild(rb);
-
-    // Suggested ETFs
-    panel.appendChild(el('div','pp-etf-title','Best ETFs for Your Goal'));
-    res.suggestions.forEach(({e,r1y,fv,pct},i)=>{
-      const card=el('div','pp-etf-card');
-      on(card,'click',()=>{ss({selected:e});fetchAI(e);});
-      const top2=el('div','pp-etf-top');
-      const symRow=el('div','',null,{display:'flex',alignItems:'center'});
-      symRow.appendChild(el('span','pp-rank',String(i+1)));
-      symRow.appendChild(el('span','pp-etf-sym',e['SYMBOL']));
-      top2.appendChild(symRow);
-      const ret=el('span','pp-etf-ret','+'+(r1y).toFixed(1)+'% / yr');
-      top2.appendChild(ret);card.appendChild(top2);
-      const ast=el('div','pp-etf-asset',e['UNDERLYING ASSET']||'');card.appendChild(ast);
-      const proj=el('div','');
-      const projBadge=el('span','pp-etf-proj');
-      projBadge.innerHTML=`₹${res.monthly.toLocaleString('en-IN')}/mo → <strong>₹${Math.round(fv).toLocaleString('en-IN')}</strong> in ${res.years}yr`;
-      proj.appendChild(projBadge);
-      if(fv>=res.target){
-        const tick=el('span','',null,{marginLeft:'6px',fontSize:'12px',color:'#2E7D32',fontWeight:'700'});tick.textContent='✓ Goal reached';proj.appendChild(tick);
-      }
-      card.appendChild(proj);
-      panel.appendChild(card);
-    });
-
-    panel.appendChild(el('div','pp-disclaimer','⚠ Past returns do not guarantee future performance. These suggestions are based on 1-year historical returns. Please consult a SEBI-registered financial advisor before investing.'));
-  }
-  return panel;
-}
+// ─── AI ───────────────────────────────────────────────────
 async function fetchAI(etf){
   const sym=etf['SYMBOL'];
   if(S.aiCache[sym]||S.aiLoading)return;
@@ -680,7 +411,6 @@ function buildExplorer(){
   left.appendChild(buildGrid(list));
   wrap.appendChild(left);
   if(S.selected)wrap.appendChild(buildDetailPanel(S.selected));
-  wrap.appendChild(buildPortfolioPanel());
   return wrap;
 }
 
